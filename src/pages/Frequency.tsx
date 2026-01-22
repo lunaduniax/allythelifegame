@@ -40,12 +40,9 @@ const Frequency = () => {
       return;
     }
 
-    // Navigate to confirmation screen with projectId
-    // Use replace to prevent back navigation to frequency after completion
-    navigate('/goal-created', { 
-      state: { projectId },
-      replace: true,
-    });
+    // Data is already saved in previous steps (CreateGoal saves project, AddTasks saves tasks)
+    // Navigate directly to Home with the projectId, using replace to prevent back navigation
+    navigate(projectId ? `/?project=${projectId}` : '/', { replace: true });
   };
 
   return (
