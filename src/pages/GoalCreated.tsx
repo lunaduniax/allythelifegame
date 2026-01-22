@@ -1,57 +1,36 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
 
 const GoalCreated = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Get all data from navigation state
+  // Get project ID from navigation state
   const projectId = location.state?.projectId as string | undefined;
-  const goalData = location.state?.goalData;
-  const tasksData = location.state?.tasksData;
-  const frequency = location.state?.frequency;
 
   useEffect(() => {
-    // Auto-navigate after 2 seconds
+    // Auto-navigate after 1200ms using replace to prevent back navigation
     const timer = setTimeout(() => {
-      navigate('/', { state: { selectedProjectId: projectId } });
-    }, 2000);
+      navigate('/', { 
+        state: { selectedProjectId: projectId },
+        replace: true,
+      });
+    }, 1200);
 
     return () => clearTimeout(timer);
   }, [navigate, projectId]);
 
-  const handleBack = () => {
-    // Navigate back to Frequency with all state preserved
-    navigate('/frequency', { 
-      state: { 
-        projectId,
-        goalData,
-        tasksData,
-        frequency,
-      } 
-    });
-  };
-
   const handleContinue = () => {
-    navigate('/', { state: { selectedProjectId: projectId } });
+    // Use replace to prevent going back to onboarding
+    navigate('/', { 
+      state: { selectedProjectId: projectId },
+      replace: true,
+    });
   };
 
   return (
     <div className="min-h-screen bg-background flex flex-col px-5 pt-12 pb-8 safe-area-inset">
-      {/* Back button */}
-      <div className="mb-6">
-        <button
-          type="button"
-          onClick={handleBack}
-          className="p-1 -ml-1 text-muted-foreground hover:text-foreground transition-colors"
-          aria-label="Volver"
-        >
-          <ChevronLeft size={24} />
-        </button>
-      </div>
-
       {/* Content centered */}
       <div className="flex-1 flex flex-col justify-center">
         {/* Sparkles emoji */}

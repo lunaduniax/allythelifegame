@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 
@@ -32,8 +32,10 @@ export function useUserProjects(initialSelectedId?: string | null) {
   const [projects, setProjects] = useState<DbProject[]>([]);
   const [tasks, setTasks] = useState<DbTask[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(initialSelectedId || null);
-  const [hasSetInitial, setHasSetInitial] = useState(!!initialSelectedId);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  
+  // Store the initial ID in a ref to persist across renders
+  const initialIdRef = useRef(initialSelectedId);
 
   const fetchProjects = useCallback(async () => {
     if (!user) {
@@ -42,6 +44,8 @@ export function useUserProjects(initialSelectedId?: string | null) {
       setLoading(false);
       return;
     }
+
+    setLoading(true);
 
     try {
       const { data: projectsData, error: projectsError } = await supabase
@@ -63,15 +67,27 @@ export function useUserProjects(initialSelectedId?: string | null) {
       setProjects(projectsData || []);
       setTasks((tasksData as DbTask[]) || []);
 
-      // Only auto-select first project if no initial selection was provided
-      if (projectsData && projectsData.length > 0 && !hasSetInitial) {
-        setSelectedProjectId(projectsData[0].id);
-        setHasSetInitial(true);
+      // After fetching, select the right project
+      if (projectsData && projectsData.length > 0) {
+        const targetId = initialIdRef.current;
+        
+        // If we have an initial ID and it exists in the fetched projects, use it
+        if (targetId && projectsData.some(p => p.id === targetId)) {
+          setSelectedProjectId(targetId);
+        } else {
+          // Otherwise, select the first project
+          setSelectedProjectId(projectsData[0].id);
+        }
+        
+        // Clear the initial ref after first use
+        initialIdRef.current = null;
       }
+    } catch (error) {
+      console.error('Error fetching projects:', error);
     } finally {
       setLoading(false);
     }
-  }, [user, hasSetInitial]);
+  }, [user]);
 
   useEffect(() => {
     fetchProjects();
