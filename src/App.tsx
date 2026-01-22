@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProjects } from "@/hooks/useUserProjects";
 import Index from "./pages/Index";
@@ -35,8 +35,15 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const HomeRoute = () => {
   const { user, loading: authLoading } = useAuth();
-  const { projects, loading: projectsLoading } = useUserProjects();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  
+  // Get selected project ID from either search params or location state
+  const selectedProjectId = searchParams.get('project') || location.state?.selectedProjectId;
+  
+  const { projects, loading: projectsLoading } = useUserProjects(selectedProjectId);
 
+  // Show loading while auth or projects are loading
   if (authLoading || projectsLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -49,12 +56,13 @@ const HomeRoute = () => {
     return <Navigate to="/auth" replace />;
   }
 
-  // If user has no projects, redirect to create goal
+  // Only redirect to onboarding after data has loaded and we confirm there are no projects
   if (projects.length === 0) {
     return <Navigate to="/create-goal" replace />;
   }
 
-  return <Index />;
+  // Pass the selected project ID to Index
+  return <Index initialProjectId={selectedProjectId} />;
 };
 
 const App = () => (

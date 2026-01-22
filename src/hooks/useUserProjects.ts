@@ -32,27 +32,39 @@ export function useUserProjects(initialSelectedId?: string | null) {
   const [projects, setProjects] = useState<DbProject[]>([]);
   const [tasks, setTasks] = useState<DbTask[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [hasFetched, setHasFetched] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(initialSelectedId || null);
   
   // Store the initial ID in a ref to persist across renders
   const initialIdRef = useRef(initialSelectedId);
+  
+  // Update ref if initialSelectedId changes (e.g., from navigation)
+  useEffect(() => {
+    if (initialSelectedId) {
+      initialIdRef.current = initialSelectedId;
+    }
+  }, [initialSelectedId]);
 
-  const fetchProjects = useCallback(async () => {
+  const fetchProjects = useCallback(async (forceRefresh = false) => {
     if (!user) {
       setProjects([]);
       setTasks([]);
       setLoading(false);
+      setHasFetched(true);
       return;
     }
 
-    setLoading(true);
+    // Only set loading true if we haven't fetched yet or forcing refresh
+    if (!hasFetched || forceRefresh) {
+      setLoading(true);
+    }
 
     try {
       const { data: projectsData, error: projectsError } = await supabase
         .from('projects')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: false }); // Most recent first
 
       if (projectsError) throw projectsError;
 
@@ -74,24 +86,24 @@ export function useUserProjects(initialSelectedId?: string | null) {
         // If we have an initial ID and it exists in the fetched projects, use it
         if (targetId && projectsData.some(p => p.id === targetId)) {
           setSelectedProjectId(targetId);
-        } else {
-          // Otherwise, select the first project
+          // Clear the initial ref after successful use
+          initialIdRef.current = null;
+        } else if (!selectedProjectId || !projectsData.some(p => p.id === selectedProjectId)) {
+          // Select the first (most recent) project if no valid selection
           setSelectedProjectId(projectsData[0].id);
         }
-        
-        // Clear the initial ref after first use
-        initialIdRef.current = null;
       }
     } catch (error) {
       console.error('Error fetching projects:', error);
     } finally {
       setLoading(false);
+      setHasFetched(true);
     }
-  }, [user]);
+  }, [user, hasFetched, selectedProjectId]);
 
   useEffect(() => {
     fetchProjects();
-  }, [fetchProjects]);
+  }, [user]); // Only refetch when user changes, not on every fetchProjects change
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId) || projects[0];
 
@@ -170,7 +182,8 @@ export function useUserProjects(initialSelectedId?: string | null) {
         .single();
 
       if (!error && data) {
-        setProjects((prev) => [...prev, data]);
+        setProjects((prev) => [data, ...prev]); // Add to beginning (most recent)
+        setSelectedProjectId(data.id); // Auto-select the new project
       }
     },
     [user]
@@ -184,6 +197,7 @@ export function useUserProjects(initialSelectedId?: string | null) {
     projects,
     tasks,
     loading,
+    hasFetched,
     selectedProject,
     selectedProjectId,
     setSelectedProjectId,
@@ -193,6 +207,6 @@ export function useUserProjects(initialSelectedId?: string | null) {
     addTask,
     addProject,
     inProgressTasks,
-    refetch: fetchProjects,
+    refetch: () => fetchProjects(true),
   };
 }

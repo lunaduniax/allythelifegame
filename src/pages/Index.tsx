@@ -1,18 +1,19 @@
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { ProjectsCarousel } from '@/components/ProjectsCarousel';
 import { TasksList } from '@/components/TasksList';
 import { BottomNav } from '@/components/BottomNav';
 import { CreateTaskModal } from '@/components/CreateTaskModal';
 import { CreateProjectModal } from '@/components/CreateProjectModal';
-import { useUserProjects, DbProject } from '@/hooks/useUserProjects';
+import { useUserProjects } from '@/hooks/useUserProjects';
 import { useAuth } from '@/hooks/useAuth';
 
-const Index = () => {
-  const location = useLocation();
+interface IndexProps {
+  initialProjectId?: string | null;
+}
+
+const Index = ({ initialProjectId }: IndexProps) => {
   const { user } = useAuth();
-  const initialProjectId = location.state?.selectedProjectId as string | undefined;
   
   const {
     projects,
@@ -24,6 +25,7 @@ const Index = () => {
     addTask,
     addProject,
     inProgressTasks,
+    loading,
   } = useUserProjects(initialProjectId);
 
   const [activeTab, setActiveTab] = useState<'home' | 'create' | 'notifications' | 'profile'>('home');
@@ -70,7 +72,8 @@ const Index = () => {
   // Get user's display name from profile or email
   const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'Usuario';
 
-  if (!mappedSelectedProject) {
+  // Show loading state
+  if (loading || !mappedSelectedProject) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-pulse text-muted-foreground">Cargando...</div>
