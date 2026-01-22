@@ -8,6 +8,7 @@ import { useUserProjects } from "@/hooks/useUserProjects";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import CreateGoal from "./pages/CreateGoal";
+import AddTasks from "./pages/AddTasks";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -68,6 +69,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <CreateGoal />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/add-tasks"
+            element={
+              <ProtectedRoute>
+                <AddTasks />
               </ProtectedRoute>
             }
           />

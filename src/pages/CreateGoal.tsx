@@ -64,14 +64,14 @@ const CreateGoal = () => {
     try {
       const validatedData = goalSchema.parse({ name, category, importance });
 
-      const { error } = await supabase.from('projects').insert({
+      const { data, error } = await supabase.from('projects').insert({
         user_id: user.id,
         name: validatedData.name,
         category: validatedData.category,
         importance: validatedData.importance || null,
         target_date: targetDate ? format(targetDate, 'yyyy-MM-dd') : null,
         color: '#D4FE00',
-      });
+      }).select().single();
 
       if (error) {
         toast.error('Error al crear la meta. Intentá de nuevo.');
@@ -79,8 +79,8 @@ const CreateGoal = () => {
         return;
       }
 
-      toast.success('¡Meta creada exitosamente!');
-      navigate('/');
+      // Navigate to AddTasks with the new project ID
+      navigate('/add-tasks', { state: { projectId: data.id } });
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
