@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { Project } from '@/types';
 import { cn } from '@/lib/utils';
-
 interface ProjectCardProps {
   project: Project;
   progress: number;
@@ -19,29 +18,19 @@ const isLightColor = (hexColor: string): boolean => {
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   return luminance > 0.5;
 };
-
 export const ProjectCard: FC<ProjectCardProps> = ({
   project,
   progress,
   isSelected,
-  onSelect,
+  onSelect
 }) => {
   const isLight = isLightColor(project.color);
   const textColor = isLight ? 'text-gray-900' : 'text-white';
   const textMutedColor = isLight ? 'text-gray-700' : 'text-white/70';
-
-  return (
-    <div
-      onClick={onSelect}
-      className={cn(
-        "flex-shrink-0 w-44 p-4 rounded-xl cursor-pointer transition-all duration-200 border-0",
-        isSelected && "ring-2 ring-offset-2 ring-offset-background"
-      )}
-      style={{
-        backgroundColor: project.color,
-        ['--tw-ring-color' as string]: project.color
-      }}
-    >
+  return <div onClick={onSelect} className={cn("flex-shrink-0 w-44 p-4 rounded-xl cursor-pointer transition-all duration-200 border-0", isSelected && "ring-2 ring-offset-2 ring-offset-background")} style={{
+    backgroundColor: project.color,
+    ['--tw-ring-color' as string]: project.color
+  }}>
       <span className={cn("font-medium opacity-70 block mb-2 text-sm", textMutedColor)}>
         {project.category}
       </span>
@@ -58,18 +47,14 @@ export const ProjectCard: FC<ProjectCardProps> = ({
           <span className={cn("text-sm font-semibold", textColor)}>{progress} %</span>
         </div>
         
-        <div className="h-3 rounded-full overflow-hidden" style={{
-          backgroundColor: isLight ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.2)'
-        }}>
-          <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{
-              width: `${progress}%`,
-              backgroundColor: isLight ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.9)'
-            }}
-          />
+        <div className="text-xs font-medium" style={{
+        backgroundColor: isLight ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.2)'
+      }}>
+          <div className="h-full rounded-full transition-all duration-500" style={{
+          width: `${progress}%`,
+          backgroundColor: isLight ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.9)'
+        }} />
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
