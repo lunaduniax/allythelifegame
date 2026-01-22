@@ -25,10 +25,8 @@ const Frequency = () => {
       return;
     }
 
-    // For now, just navigate to home. 
-    // Frequency preference can be stored later if needed.
-    toast.success('¡Meta creada exitosamente!');
-    navigate('/');
+    // Navigate to confirmation screen with projectId
+    navigate('/goal-created', { state: { projectId } });
   };
 
   return (
