@@ -33,17 +33,21 @@ export function useUserProjects(initialSelectedId?: string | null) {
   const [tasks, setTasks] = useState<DbTask[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasFetched, setHasFetched] = useState(false);
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(initialSelectedId || null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   
-  // Store the initial ID in a ref to persist across renders
-  const initialIdRef = useRef(initialSelectedId);
+  // Store the initial ID in a ref to persist across renders and fetches
+  const initialIdRef = useRef<string | null>(initialSelectedId || null);
   
   // Update ref if initialSelectedId changes (e.g., from navigation)
   useEffect(() => {
     if (initialSelectedId) {
       initialIdRef.current = initialSelectedId;
+      // If we already have projects loaded, immediately select the new project
+      if (projects.length > 0 && projects.some(p => p.id === initialSelectedId)) {
+        setSelectedProjectId(initialSelectedId);
+      }
     }
-  }, [initialSelectedId]);
+  }, [initialSelectedId, projects]);
 
   const fetchProjects = useCallback(async (forceRefresh = false) => {
     if (!user) {
@@ -88,8 +92,8 @@ export function useUserProjects(initialSelectedId?: string | null) {
           setSelectedProjectId(targetId);
           // Clear the initial ref after successful use
           initialIdRef.current = null;
-        } else if (!selectedProjectId || !projectsData.some(p => p.id === selectedProjectId)) {
-          // Select the first (most recent) project if no valid selection
+        } else if (!selectedProjectId || forceRefresh) {
+          // Select the first (most recent) project if no valid selection or forcing refresh
           setSelectedProjectId(projectsData[0].id);
         }
       }

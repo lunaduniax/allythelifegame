@@ -42,7 +42,9 @@ const Frequency = () => {
 
     // Data is already saved in previous steps (CreateGoal saves project, AddTasks saves tasks)
     // Navigate directly to Home with the projectId, using replace to prevent back navigation
-    navigate(projectId ? `/?project=${projectId}` : '/', { replace: true });
+    // If projectId is missing, just go to home without selecting a specific project
+    const targetUrl = projectId ? `/?project=${projectId}` : '/';
+    navigate(targetUrl, { replace: true });
   };
 
   return (
