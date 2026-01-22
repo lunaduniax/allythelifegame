@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { Project } from '@/types';
 import { ProjectCard } from './ProjectCard';
+import { Plus } from 'lucide-react';
 
 interface ProjectsCarouselProps {
   projects: Project[];
@@ -33,8 +34,9 @@ export const ProjectsCarousel: FC<ProjectsCarouselProps> = ({
         {/* Create New Goal Card */}
         <button
           onClick={onCreateProject}
-          className="flex-shrink-0 w-44 p-4 rounded-xl cursor-pointer transition-all duration-200 border border-border bg-card/50 hover:bg-card hover:border-muted-foreground/30 flex items-center justify-center"
+          className="flex-shrink-0 w-44 p-4 rounded-xl cursor-pointer transition-all duration-200 border border-border bg-card/50 hover:bg-card hover:border-muted-foreground/30 flex flex-col items-center justify-center gap-2"
         >
+          <Plus size={28} className="text-muted-foreground" />
           <span className="font-semibold leading-tight text-xl text-muted-foreground">
             Crear nueva meta
           </span>
