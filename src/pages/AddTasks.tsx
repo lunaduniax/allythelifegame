@@ -14,10 +14,13 @@ const AddTasks = () => {
   const location = useLocation();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [tasks, setTasks] = useState<string[]>(['', '', '', '']);
 
-  // Get project ID from navigation state
+  // Get data from navigation state
   const projectId = location.state?.projectId as string | undefined;
+  const goalData = location.state?.goalData;
+  const restoredTasks = location.state?.tasksData;
+
+  const [tasks, setTasks] = useState<string[]>(restoredTasks || ['', '', '', '']);
 
   const handleTaskChange = (index: number, value: string) => {
     const newTasks = [...tasks];
@@ -27,6 +30,11 @@ const AddTasks = () => {
 
   const handleAddTask = () => {
     setTasks([...tasks, '']);
+  };
+
+  const handleBack = () => {
+    // Navigate back to CreateGoal with the goal data restored
+    navigate('/create-goal', { state: { goalData } });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,8 +50,14 @@ const AddTasks = () => {
     const validTasks = tasks.filter((t) => t.trim().length > 0);
 
     if (validTasks.length === 0) {
-      // No tasks added, just go to home
-      navigate('/');
+      // No tasks added, just go to frequency
+      navigate('/frequency', { 
+        state: { 
+          projectId, 
+          goalData,
+          tasksData: tasks,
+        } 
+      });
       return;
     }
 
@@ -75,7 +89,13 @@ const AddTasks = () => {
       }
 
       toast.success('¡Tareas creadas exitosamente!');
-      navigate('/frequency', { state: { projectId } });
+      navigate('/frequency', { 
+        state: { 
+          projectId, 
+          goalData,
+          tasksData: tasks,
+        } 
+      });
     } catch (error) {
       toast.error('Ocurrió un error. Intentá de nuevo.');
     } finally {
@@ -86,7 +106,7 @@ const AddTasks = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col px-5 pt-12 pb-8 safe-area-inset">
       {/* Step Indicator */}
-      <OnboardingStepIndicator currentStep={2} />
+      <OnboardingStepIndicator currentStep={2} onBack={handleBack} />
 
       {/* Header */}
       <div className="mb-6">
