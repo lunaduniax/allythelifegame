@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { ProjectsCarousel } from '@/components/ProjectsCarousel';
 import { TasksList } from '@/components/TasksList';
@@ -9,7 +10,9 @@ import { useUserProjects, DbProject } from '@/hooks/useUserProjects';
 import { useAuth } from '@/hooks/useAuth';
 
 const Index = () => {
+  const location = useLocation();
   const { user } = useAuth();
+  const initialProjectId = location.state?.selectedProjectId as string | undefined;
   const {
     projects,
     selectedProject,
@@ -21,6 +24,13 @@ const Index = () => {
     addProject,
     inProgressTasks,
   } = useUserProjects();
+
+  // Set initial project from navigation state
+  useEffect(() => {
+    if (initialProjectId && projects.length > 0) {
+      setSelectedProjectId(initialProjectId);
+    }
+  }, [initialProjectId, projects.length, setSelectedProjectId]);
 
   const [activeTab, setActiveTab] = useState<'home' | 'create' | 'notifications' | 'profile'>('home');
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
