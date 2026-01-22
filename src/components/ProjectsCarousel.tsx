@@ -1,6 +1,8 @@
 import { FC } from 'react';
 import { Project } from '@/types';
 import { ProjectCard } from './ProjectCard';
+import { Plus } from 'lucide-react';
+
 interface ProjectsCarouselProps {
   projects: Project[];
   selectedProjectId: string;
@@ -8,6 +10,7 @@ interface ProjectsCarouselProps {
   getProgress: (project: Project) => number;
   onCreateProject: () => void;
 }
+
 export const ProjectsCarousel: FC<ProjectsCarouselProps> = ({
   projects,
   selectedProjectId,
@@ -15,15 +18,32 @@ export const ProjectsCarousel: FC<ProjectsCarouselProps> = ({
   getProgress,
   onCreateProject
 }) => {
-  // Sort to put yellow card last
-  const sortedProjects = [...projects].sort((a, b) => {
-    if (a.color === 'yellow' && b.color !== 'yellow') return 1;
-    if (a.color !== 'yellow' && b.color === 'yellow') return -1;
-    return 0;
-  });
-  return <div className="overflow-x-auto scrollbar-hide pb-4">
+  return (
+    <div className="overflow-x-auto scrollbar-hide pb-4">
       <div className="flex gap-3 px-5 my-0 py-[9px]">
-        {sortedProjects.map((project, index) => <ProjectCard key={project.id} project={project} progress={getProgress(project)} isSelected={project.id === selectedProjectId} onSelect={() => onSelectProject(project.id)} onCreateNew={onCreateProject} isCreateCard={project.color === 'yellow'} />)}
+        {projects.map((project) => (
+          <ProjectCard
+            key={project.id}
+            project={project}
+            progress={getProgress(project)}
+            isSelected={project.id === selectedProjectId}
+            onSelect={() => onSelectProject(project.id)}
+          />
+        ))}
+        
+        {/* Create New Goal Card */}
+        <button
+          onClick={onCreateProject}
+          className="flex-shrink-0 w-44 p-4 rounded-xl cursor-pointer transition-all duration-200 border border-border bg-card/50 hover:bg-card hover:border-muted-foreground/30 flex flex-col items-center justify-center gap-3"
+        >
+          <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
+            <Plus size={24} className="text-muted-foreground" />
+          </div>
+          <span className="text-sm font-medium text-muted-foreground text-center">
+            + Crear nueva meta
+          </span>
+        </button>
       </div>
-    </div>;
+    </div>
+  );
 };
