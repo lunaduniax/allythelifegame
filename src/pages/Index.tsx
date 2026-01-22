@@ -28,7 +28,7 @@ const Index = () => {
     addTask(selectedProjectId, data);
   };
 
-  const handleCreateProject = (data: { name: string; category: string; color: 'light' | 'yellow' }) => {
+  const handleCreateProject = (data: { name: string; category: string; color: string }) => {
     addProject(data);
   };
 
@@ -49,6 +49,7 @@ const Index = () => {
 
       <TasksList
         projectName={selectedProject.name}
+        projectColor={selectedProject.color}
         tasks={inProgressTasks}
         onCompleteTask={completeTask}
         onCreateTask={() => setIsTaskModalOpen(true)}

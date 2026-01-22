@@ -12,7 +12,7 @@ export interface Project {
   id: string;
   name: string;
   category: string;
-  color: 'light' | 'yellow';
+  color: string; // HSL color string e.g. "68 100% 50%"
   tasks: Task[];
 }
 
