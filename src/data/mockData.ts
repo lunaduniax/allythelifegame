@@ -5,7 +5,7 @@ export const initialProjects: Project[] = [
     id: '1',
     name: 'Marketing proyect',
     category: 'Work',
-    color: '252 83% 75%', // Lavender
+    color: '252 83% 90%', // #DAD2FB Lavender
     tasks: [
       {
         id: 't1',
