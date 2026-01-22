@@ -27,7 +27,7 @@ export const ProjectCard: FC<ProjectCardProps> = ({
       <div
         onClick={onSelect}
         className={cn(
-          "flex-shrink-0 w-44 p-4 rounded-xl cursor-pointer transition-all duration-200",
+          "flex-shrink-0 w-44 p-4 rounded-xl cursor-pointer transition-all duration-200 border-0",
           isYellow 
             ? "bg-accent text-accent-foreground" 
             : "bg-card-light text-card-light-foreground",
