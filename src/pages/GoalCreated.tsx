@@ -12,21 +12,16 @@ const GoalCreated = () => {
   useEffect(() => {
     // Auto-navigate after 1200ms using replace to prevent back navigation
     const timer = setTimeout(() => {
-      navigate('/', { 
-        state: { selectedProjectId: projectId },
-        replace: true,
-      });
+      // Use search params for more reliable state passing
+      navigate(projectId ? `/?project=${projectId}` : '/', { replace: true });
     }, 1200);
 
     return () => clearTimeout(timer);
   }, [navigate, projectId]);
 
   const handleContinue = () => {
-    // Use replace to prevent going back to onboarding
-    navigate('/', { 
-      state: { selectedProjectId: projectId },
-      replace: true,
-    });
+    // Use search params for more reliable state passing
+    navigate(projectId ? `/?project=${projectId}` : '/', { replace: true });
   };
 
   return (
