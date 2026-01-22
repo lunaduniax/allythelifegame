@@ -25,6 +25,7 @@ import { z } from 'zod';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import OnboardingStepIndicator from '@/components/OnboardingStepIndicator';
 
 const goalSchema = z.object({
   name: z.string().min(1, 'La meta es requerida').max(200, 'La meta es muy larga'),
@@ -94,6 +95,9 @@ const CreateGoal = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col px-5 pt-12 pb-8 safe-area-inset">
+      {/* Step Indicator */}
+      <OnboardingStepIndicator currentStep={1} />
+
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-4xl font-bold leading-tight text-foreground">

@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import CreateGoal from "./pages/CreateGoal";
 import AddTasks from "./pages/AddTasks";
+import Frequency from "./pages/Frequency";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -77,6 +78,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <AddTasks />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/frequency"
+            element={
+              <ProtectedRoute>
+                <Frequency />
               </ProtectedRoute>
             }
           />
