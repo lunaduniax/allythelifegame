@@ -28,7 +28,7 @@ export interface DbTask {
 }
 
 export function useUserProjects(initialSelectedId?: string | null) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [projects, setProjects] = useState<DbProject[]>([]);
   const [tasks, setTasks] = useState<DbTask[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,6 +50,12 @@ export function useUserProjects(initialSelectedId?: string | null) {
   }, [initialSelectedId, projects]);
 
   const fetchProjects = useCallback(async (forceRefresh = false) => {
+    // Don't fetch if auth is still loading - wait for it
+    if (authLoading) {
+      return;
+    }
+    
+    // If no user after auth loading completes, set empty state
     if (!user) {
       setProjects([]);
       setTasks([]);
@@ -106,8 +112,11 @@ export function useUserProjects(initialSelectedId?: string | null) {
   }, [user, hasFetched, selectedProjectId]);
 
   useEffect(() => {
-    fetchProjects();
-  }, [user]); // Only refetch when user changes, not on every fetchProjects change
+    // Only fetch when auth loading is complete
+    if (!authLoading) {
+      fetchProjects();
+    }
+  }, [user, authLoading]); // Refetch when user or authLoading changes
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId) || projects[0];
 
