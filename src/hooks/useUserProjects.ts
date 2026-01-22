@@ -27,12 +27,13 @@ export interface DbTask {
   updated_at: string;
 }
 
-export function useUserProjects() {
+export function useUserProjects(initialSelectedId?: string | null) {
   const { user } = useAuth();
   const [projects, setProjects] = useState<DbProject[]>([]);
   const [tasks, setTasks] = useState<DbTask[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(initialSelectedId || null);
+  const [hasSetInitial, setHasSetInitial] = useState(!!initialSelectedId);
 
   const fetchProjects = useCallback(async () => {
     if (!user) {
@@ -62,15 +63,15 @@ export function useUserProjects() {
       setProjects(projectsData || []);
       setTasks((tasksData as DbTask[]) || []);
 
-      if (projectsData && projectsData.length > 0 && !selectedProjectId) {
+      // Only auto-select first project if no initial selection was provided
+      if (projectsData && projectsData.length > 0 && !hasSetInitial) {
         setSelectedProjectId(projectsData[0].id);
+        setHasSetInitial(true);
       }
-    } catch (error) {
-      console.error('Error fetching projects:', error);
     } finally {
       setLoading(false);
     }
-  }, [user, selectedProjectId]);
+  }, [user, hasSetInitial]);
 
   useEffect(() => {
     fetchProjects();
