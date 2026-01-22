@@ -40,14 +40,11 @@ const Frequency = () => {
       return;
     }
 
-    // Navigate to confirmation screen with all data
+    // Navigate to confirmation screen with projectId
+    // Use replace to prevent back navigation to frequency after completion
     navigate('/goal-created', { 
-      state: { 
-        projectId,
-        goalData,
-        tasksData,
-        frequency: selectedFrequency,
-      } 
+      state: { projectId },
+      replace: true,
     });
   };
 
