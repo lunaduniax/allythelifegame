@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
+import OnboardingStepIndicator from '@/components/OnboardingStepIndicator';
 
 const AddTasks = () => {
   const navigate = useNavigate();
@@ -74,7 +75,7 @@ const AddTasks = () => {
       }
 
       toast.success('¡Tareas creadas exitosamente!');
-      navigate('/');
+      navigate('/frequency', { state: { projectId } });
     } catch (error) {
       toast.error('Ocurrió un error. Intentá de nuevo.');
     } finally {
@@ -84,6 +85,9 @@ const AddTasks = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col px-5 pt-12 pb-8 safe-area-inset">
+      {/* Step Indicator */}
+      <OnboardingStepIndicator currentStep={2} />
+
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-4xl font-bold leading-tight text-foreground">
