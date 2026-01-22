@@ -1,5 +1,4 @@
 import { ChevronLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 interface OnboardingStepIndicatorProps {
   currentStep: 1 | 2 | 3;
@@ -14,32 +13,25 @@ const OnboardingStepIndicator = ({
   onBack,
   showBack = true,
 }: OnboardingStepIndicatorProps) => {
-  const navigate = useNavigate();
-
-  const handleBack = () => {
-    if (onBack) {
-      onBack();
-    } else {
-      navigate(-1);
-    }
-  };
-
   return (
-    <div className="flex items-center gap-4 mb-6">
-      {/* Back button */}
-      {showBack && currentStep > 1 && (
-        <button
-          type="button"
-          onClick={handleBack}
-          className="p-1 -ml-1 text-muted-foreground hover:text-foreground transition-colors"
-          aria-label="Volver"
-        >
-          <ChevronLeft size={24} />
-        </button>
-      )}
+    <div className="flex items-center justify-between gap-4 mb-6">
+      {/* Left: Back button */}
+      <div className="w-16 flex items-center">
+        {showBack && onBack && (
+          <button
+            type="button"
+            onClick={onBack}
+            className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Volver"
+          >
+            <ChevronLeft size={20} />
+            <span className="text-sm">Back</span>
+          </button>
+        )}
+      </div>
 
-      {/* Step bars */}
-      <div className="flex items-center gap-2 flex-1 justify-center">
+      {/* Center: Step bars */}
+      <div className="flex items-center gap-1.5 flex-1 justify-center">
         {Array.from({ length: totalSteps }, (_, i) => {
           const stepNumber = i + 1;
           const isFilled = stepNumber <= currentStep;
@@ -47,7 +39,7 @@ const OnboardingStepIndicator = ({
           return (
             <div
               key={stepNumber}
-              className={`h-1 w-16 rounded-full transition-colors ${
+              className={`h-1 flex-1 max-w-12 rounded-full transition-colors ${
                 isFilled ? 'bg-foreground' : 'bg-muted-foreground/30'
               }`}
             />
@@ -55,10 +47,12 @@ const OnboardingStepIndicator = ({
         })}
       </div>
 
-      {/* Spacer for symmetry when back button is shown */}
-      {showBack && currentStep > 1 && (
-        <div className="w-6" />
-      )}
+      {/* Right: Step text */}
+      <div className="w-16 flex justify-end">
+        <span className="text-sm text-muted-foreground">
+          {currentStep} of {totalSteps}
+        </span>
+      </div>
     </div>
   );
 };

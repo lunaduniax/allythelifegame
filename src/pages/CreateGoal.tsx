@@ -112,7 +112,7 @@ const CreateGoal = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col px-5 pt-12 pb-8 safe-area-inset">
       {/* Step Indicator */}
-      <OnboardingStepIndicator currentStep={1} showBack={false} />
+      <OnboardingStepIndicator currentStep={1} />
 
       {/* Header */}
       <div className="mb-6">
