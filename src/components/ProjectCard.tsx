@@ -12,14 +12,15 @@ interface ProjectCardProps {
   isCreateCard?: boolean;
 }
 
-// Helper to determine if a color is light (for text contrast)
-const isLightColor = (hslColor: string): boolean => {
-  const parts = hslColor.split(' ');
-  if (parts.length >= 3) {
-    const lightness = parseFloat(parts[2]);
-    return lightness >= 45;
-  }
-  return true;
+// Helper to determine if a hex color is light (for text contrast)
+const isLightColor = (hexColor: string): boolean => {
+  const hex = hexColor.replace('#', '');
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  // Using relative luminance formula
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.5;
 };
 
 export const ProjectCard: FC<ProjectCardProps> = ({
@@ -43,8 +44,8 @@ export const ProjectCard: FC<ProjectCardProps> = ({
           isSelected && "ring-2 ring-offset-2 ring-offset-background"
         )}
         style={{
-          backgroundColor: `hsl(${project.color})`,
-          ['--tw-ring-color' as string]: `hsl(${project.color})`,
+          backgroundColor: project.color,
+          ['--tw-ring-color' as string]: project.color,
         }}
       >
         <span className={cn("text-xs font-medium opacity-70 block mb-2", textMutedColor)}>
