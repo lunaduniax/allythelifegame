@@ -6,6 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
@@ -16,6 +22,9 @@ import {
 import { Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 
 const goalSchema = z.object({
   name: z.string().min(1, 'La meta es requerida').max(200, 'La meta es muy larga'),
@@ -40,7 +49,7 @@ const CreateGoal = () => {
   const [name, setName] = useState('');
   const [category, setCategory] = useState('Proyectos personales');
   const [importance, setImportance] = useState('');
-  const [targetDate, setTargetDate] = useState('');
+  const [targetDate, setTargetDate] = useState<Date | undefined>(undefined);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +69,7 @@ const CreateGoal = () => {
         name: validatedData.name,
         category: validatedData.category,
         importance: validatedData.importance || null,
-        target_date: targetDate || null,
+        target_date: targetDate ? format(targetDate, 'yyyy-MM-dd') : null,
         color: '#D4FE00',
       });
 
@@ -141,22 +150,32 @@ const CreateGoal = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="targetDate" className="text-sm text-muted-foreground">
+          <Label className="text-sm text-muted-foreground">
             Fecha estimada de finalización
           </Label>
-          <div className="relative">
-            <Input
-              id="targetDate"
-              type="date"
-              value={targetDate}
-              onChange={(e) => setTargetDate(e.target.value)}
-              className="h-14 bg-card border-border rounded-lg text-foreground pl-12"
-            />
-            <Calendar 
-              size={20} 
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" 
-            />
-          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className={cn(
+                  "w-full h-14 bg-card border border-border rounded-lg text-foreground flex items-center gap-3 px-4 text-left",
+                  !targetDate && "text-muted-foreground"
+                )}
+              >
+                <Calendar size={20} className="text-muted-foreground flex-shrink-0" />
+                {targetDate ? format(targetDate, "dd/MM/yyyy", { locale: es }) : "Seleccionar fecha"}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 bg-card border-border" align="start">
+              <CalendarComponent
+                mode="single"
+                selected={targetDate}
+                onSelect={setTargetDate}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
         </div>
 
         <div className="mt-auto pt-6">
