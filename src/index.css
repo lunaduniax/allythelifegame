@@ -8,7 +8,7 @@
 
 @layer base {
   :root {
-    --background: 225 20% 5%;
+    --background: 230 38% 6%;
     --foreground: 0 0% 98%;
 
     --card: 225 15% 10%;
@@ -46,7 +46,7 @@
     --task-tag-bg: 225 10% 20%;
     --success: 145 60% 45%;
 
-    --sidebar-background: 225 20% 5%;
+    --sidebar-background: 230 38% 6%;
     --sidebar-foreground: 0 0% 98%;
     --sidebar-primary: 340 75% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
@@ -57,7 +57,7 @@
   }
 
   .dark {
-    --background: 225 20% 5%;
+    --background: 230 38% 6%;
     --foreground: 0 0% 98%;
     --card: 225 15% 10%;
     --card-foreground: 0 0% 98%;
@@ -76,7 +76,7 @@
     --border: 225 10% 18%;
     --input: 225 12% 15%;
     --ring: 340 75% 55%;
-    --sidebar-background: 225 20% 5%;
+    --sidebar-background: 230 38% 6%;
     --sidebar-foreground: 0 0% 98%;
     --sidebar-primary: 340 75% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
