@@ -10,12 +10,12 @@ interface CreateProjectModalProps {
 }
 
 const colorOptions = [
-  { name: 'Lavender', value: '252 83% 75%' },
-  { name: 'Yellow', value: '68 100% 50%' },
-  { name: 'Teal', value: '180 70% 45%' },
-  { name: 'Coral', value: '16 85% 60%' },
-  { name: 'Mint', value: '150 60% 55%' },
-  { name: 'Sky', value: '200 80% 60%' },
+  { name: 'Violet', value: '#DAD2FB' },
+  { name: 'Yellow', value: '#D4FE00' },
+  { name: 'Teal', value: '#4FD1C5' },
+  { name: 'Coral', value: '#F6AD55' },
+  { name: 'Mint', value: '#68D391' },
+  { name: 'Sky', value: '#63B3ED' },
 ];
 
 export const CreateProjectModal: FC<CreateProjectModalProps> = ({
@@ -111,7 +111,7 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
                         "w-12 h-12 rounded-xl transition-all",
                         color === option.value && "ring-2 ring-primary ring-offset-2 ring-offset-card"
                       )}
-                      style={{ backgroundColor: `hsl(${option.value})` }}
+                      style={{ backgroundColor: option.value }}
                       title={option.name}
                     />
                   ))}

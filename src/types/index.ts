@@ -12,7 +12,7 @@ export interface Project {
   id: string;
   name: string;
   category: string;
-  color: string; // HSL color string e.g. "68 100% 50%"
+  color: string; // Hex color e.g. "#DAD2FB"
   tasks: Task[];
 }
 

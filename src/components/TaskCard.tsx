@@ -6,9 +6,18 @@ import { cn } from '@/lib/utils';
 
 interface TaskCardProps {
   task: Task;
-  projectColor: string; // HSL color string
+  projectColor: string; // Hex color string
   onComplete: () => void;
 }
+
+// Helper to convert hex to rgba
+const hexToRgba = (hex: string, alpha: number): string => {
+  const hexClean = hex.replace('#', '');
+  const r = parseInt(hexClean.substring(0, 2), 16);
+  const g = parseInt(hexClean.substring(2, 4), 16);
+  const b = parseInt(hexClean.substring(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
 
 export const TaskCard: FC<TaskCardProps> = ({ task, projectColor, onComplete }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -18,11 +27,6 @@ export const TaskCard: FC<TaskCardProps> = ({ task, projectColor, onComplete }) 
   const opacity = useTransform(x, [0, 100], [1, 0.5]);
   const checkOpacity = useTransform(x, [0, 50, 100], [0, 0.5, 1]);
   const checkScale = useTransform(x, [0, 100], [0.5, 1]);
-  const backgroundColor = useTransform(
-    x, 
-    [0, 100], 
-    ['hsl(var(--card))', 'hsl(var(--success))']
-  );
 
   const handleDragEnd = (_: any, info: PanInfo) => {
     if (info.offset.x > 100) {
@@ -78,14 +82,14 @@ export const TaskCard: FC<TaskCardProps> = ({ task, projectColor, onComplete }) 
       >
         <div 
           className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl"
-          style={{ backgroundColor: `hsl(${projectColor})` }}
+          style={{ backgroundColor: projectColor }}
         />
         
         <span 
           className="text-xs font-medium block mb-1.5 px-2 py-0.5 rounded-md w-fit"
           style={{ 
-            backgroundColor: `hsl(${projectColor} / 0.15)`,
-            color: `hsl(${projectColor})`,
+            backgroundColor: hexToRgba(projectColor, 0.15),
+            color: projectColor,
           }}
         >
           {task.category}
@@ -112,7 +116,7 @@ export const TaskCard: FC<TaskCardProps> = ({ task, projectColor, onComplete }) 
         >
           <div 
             className="pt-3 border-t"
-            style={{ borderColor: `hsl(${projectColor} / 0.2)` }}
+            style={{ borderColor: hexToRgba(projectColor, 0.2) }}
           >
             <p className="text-sm text-muted-foreground leading-relaxed">
               {task.description}

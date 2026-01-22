@@ -5,7 +5,7 @@ export const initialProjects: Project[] = [
     id: '1',
     name: 'Marketing proyect',
     category: 'Work',
-    color: '252 83% 90%', // #DAD2FB Lavender
+    color: '#DAD2FB', // Violet
     tasks: [
       {
         id: 't1',
@@ -49,7 +49,7 @@ export const initialProjects: Project[] = [
     id: '2',
     name: 'Diseño Ally App',
     category: 'Proyectos personales',
-    color: '68 100% 50%', // Yellow-green
+    color: '#D4FE00', // Yellow
     tasks: [
       {
         id: 't5',
@@ -75,7 +75,7 @@ export const initialProjects: Project[] = [
     id: '3',
     name: 'Fitness Tracker',
     category: 'Personal',
-    color: '180 70% 45%', // Teal
+    color: '#4FD1C5', // Teal
     tasks: [
       {
         id: 't7',
