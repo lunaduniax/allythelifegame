@@ -36,15 +36,17 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const HomeRoute = () => {
   const { user, loading: authLoading } = useAuth();
   const location = useLocation();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   
   // Get selected project ID from either search params or location state
-  const selectedProjectId = searchParams.get('project') || location.state?.selectedProjectId;
+  const projectIdFromUrl = searchParams.get('project');
+  const projectIdFromState = location.state?.selectedProjectId;
+  const initialProjectId = projectIdFromUrl || projectIdFromState || null;
   
-  const { projects, loading: projectsLoading } = useUserProjects(selectedProjectId);
+  const { projects, loading: projectsLoading, hasFetched } = useUserProjects(initialProjectId);
 
-  // Show loading while auth or projects are loading
-  if (authLoading || projectsLoading) {
+  // Show loading while auth is loading, or while projects haven't been fetched yet
+  if (authLoading || !hasFetched) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-pulse text-muted-foreground">Cargando...</div>
@@ -62,7 +64,7 @@ const HomeRoute = () => {
   }
 
   // Pass the selected project ID to Index
-  return <Index initialProjectId={selectedProjectId} />;
+  return <Index initialProjectId={initialProjectId} />;
 };
 
 const App = () => (
