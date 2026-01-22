@@ -6,8 +6,17 @@ import { cn } from '@/lib/utils';
 interface CreateProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { name: string; category: string; color: 'light' | 'yellow' }) => void;
+  onSubmit: (data: { name: string; category: string; color: string }) => void;
 }
+
+const colorOptions = [
+  { name: 'Lavender', value: '252 83% 75%' },
+  { name: 'Yellow', value: '68 100% 50%' },
+  { name: 'Teal', value: '180 70% 45%' },
+  { name: 'Coral', value: '16 85% 60%' },
+  { name: 'Mint', value: '150 60% 55%' },
+  { name: 'Sky', value: '200 80% 60%' },
+];
 
 export const CreateProjectModal: FC<CreateProjectModalProps> = ({
   isOpen,
@@ -16,7 +25,7 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
 }) => {
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
-  const [color, setColor] = useState<'light' | 'yellow'>('light');
+  const [color, setColor] = useState(colorOptions[0].value);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +39,7 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
 
     setName('');
     setCategory('');
-    setColor('light');
+    setColor(colorOptions[0].value);
     onClose();
   };
 
@@ -92,23 +101,20 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
                 <label className="text-sm font-medium text-muted-foreground block mb-2">
                   Color de la tarjeta
                 </label>
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setColor('light')}
-                    className={cn(
-                      "flex-1 h-12 rounded-xl bg-card-light transition-all",
-                      color === 'light' && "ring-2 ring-primary ring-offset-2 ring-offset-card"
-                    )}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setColor('yellow')}
-                    className={cn(
-                      "flex-1 h-12 rounded-xl bg-accent transition-all",
-                      color === 'yellow' && "ring-2 ring-primary ring-offset-2 ring-offset-card"
-                    )}
-                  />
+                <div className="flex gap-3 flex-wrap">
+                  {colorOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => setColor(option.value)}
+                      className={cn(
+                        "w-12 h-12 rounded-xl transition-all",
+                        color === option.value && "ring-2 ring-primary ring-offset-2 ring-offset-card"
+                      )}
+                      style={{ backgroundColor: `hsl(${option.value})` }}
+                      title={option.name}
+                    />
+                  ))}
                 </div>
               </div>
 

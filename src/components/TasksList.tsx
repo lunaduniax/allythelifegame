@@ -5,6 +5,7 @@ import { Plus } from 'lucide-react';
 
 interface TasksListProps {
   projectName: string;
+  projectColor: string;
   tasks: Task[];
   onCompleteTask: (taskId: string) => void;
   onCreateTask: () => void;
@@ -12,6 +13,7 @@ interface TasksListProps {
 
 export const TasksList: FC<TasksListProps> = ({
   projectName,
+  projectColor,
   tasks,
   onCompleteTask,
   onCreateTask,
@@ -27,6 +29,7 @@ export const TasksList: FC<TasksListProps> = ({
           <TaskCard
             key={task.id}
             task={task}
+            projectColor={projectColor}
             onComplete={() => onCompleteTask(task.id)}
           />
         ))}

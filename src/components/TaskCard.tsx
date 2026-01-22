@@ -6,10 +6,11 @@ import { cn } from '@/lib/utils';
 
 interface TaskCardProps {
   task: Task;
+  projectColor: string; // HSL color string
   onComplete: () => void;
 }
 
-export const TaskCard: FC<TaskCardProps> = ({ task, onComplete }) => {
+export const TaskCard: FC<TaskCardProps> = ({ task, projectColor, onComplete }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
   
@@ -71,11 +72,22 @@ export const TaskCard: FC<TaskCardProps> = ({ task, onComplete }) => {
         onClick={handleTap}
         className={cn(
           "bg-card rounded-xl p-4 cursor-pointer relative z-10",
-          "border border-border/50"
+          "border-l-4"
         )}
         whileTap={{ scale: 0.98 }}
       >
-        <span className="text-xs text-muted-foreground font-medium block mb-1.5">
+        <div 
+          className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl"
+          style={{ backgroundColor: `hsl(${projectColor})` }}
+        />
+        
+        <span 
+          className="text-xs font-medium block mb-1.5 px-2 py-0.5 rounded-md w-fit"
+          style={{ 
+            backgroundColor: `hsl(${projectColor} / 0.15)`,
+            color: `hsl(${projectColor})`,
+          }}
+        >
           {task.category}
         </span>
         
@@ -98,7 +110,10 @@ export const TaskCard: FC<TaskCardProps> = ({ task, onComplete }) => {
           transition={{ duration: 0.2 }}
           className="overflow-hidden"
         >
-          <div className="pt-3 border-t border-border/50">
+          <div 
+            className="pt-3 border-t"
+            style={{ borderColor: `hsl(${projectColor} / 0.2)` }}
+          >
             <p className="text-sm text-muted-foreground leading-relaxed">
               {task.description}
             </p>
