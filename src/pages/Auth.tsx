@@ -126,8 +126,7 @@ const Auth = () => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="h-14 bg-card border-border rounded-xl text-foreground placeholder:text-muted-foreground"
-              placeholder="Tu nombre"
+              className="h-14 bg-card border-border rounded-lg text-foreground"
             />
           </div>
         )}
@@ -141,8 +140,7 @@ const Auth = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="h-14 bg-card border-border rounded-xl text-foreground placeholder:text-muted-foreground"
-            placeholder="tu@email.com"
+            className="h-14 bg-card border-border rounded-lg text-foreground"
           />
         </div>
 
@@ -156,8 +154,7 @@ const Auth = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="h-14 bg-card border-border rounded-xl text-foreground placeholder:text-muted-foreground"
-              placeholder="••••••••"
+              className="h-14 bg-card border-border rounded-lg text-foreground"
             />
           </div>
         )}
@@ -165,7 +162,7 @@ const Auth = () => {
         <Button
           type="submit"
           disabled={isLoading}
-          className="h-14 rounded-full bg-primary text-primary-foreground font-semibold text-base hover:bg-primary/90 mt-4"
+          className="h-14 rounded-lg bg-primary text-primary-foreground font-semibold text-base hover:bg-primary/90 mt-4"
         >
           {isLoading
             ? 'Cargando...'
@@ -186,7 +183,7 @@ const Auth = () => {
           <Button
             type="button"
             variant="outline"
-            className="flex-1 h-12 rounded-xl bg-card border-border hover:bg-card-elevated"
+            className="flex-1 h-12 rounded-lg bg-card border-border text-foreground hover:bg-card-elevated hover:text-foreground"
             onClick={() => toast.info('Google login próximamente')}
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -213,7 +210,7 @@ const Auth = () => {
           <Button
             type="button"
             variant="outline"
-            className="flex-1 h-12 rounded-xl bg-card border-border hover:bg-card-elevated"
+            className="flex-1 h-12 rounded-lg bg-card border-border text-foreground hover:bg-card-elevated hover:text-foreground"
             onClick={() => toast.info('Apple login próximamente')}
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
