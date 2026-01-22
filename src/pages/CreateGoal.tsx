@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -45,12 +45,18 @@ const categories = [
 
 const CreateGoal = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [name, setName] = useState('');
-  const [category, setCategory] = useState('Proyectos personales');
-  const [importance, setImportance] = useState('');
-  const [targetDate, setTargetDate] = useState<Date | undefined>(undefined);
+
+  // Restore state from navigation if coming back
+  const restoredState = location.state?.goalData;
+  const [name, setName] = useState(restoredState?.name || '');
+  const [category, setCategory] = useState(restoredState?.category || 'Proyectos personales');
+  const [importance, setImportance] = useState(restoredState?.importance || '');
+  const [targetDate, setTargetDate] = useState<Date | undefined>(
+    restoredState?.targetDate ? new Date(restoredState.targetDate) : undefined
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,8 +86,18 @@ const CreateGoal = () => {
         return;
       }
 
-      // Navigate to AddTasks with the new project ID
-      navigate('/add-tasks', { state: { projectId: data.id } });
+      // Navigate to AddTasks with the new project ID and goal data for back navigation
+      navigate('/add-tasks', { 
+        state: { 
+          projectId: data.id,
+          goalData: {
+            name,
+            category,
+            importance,
+            targetDate: targetDate?.toISOString(),
+          }
+        } 
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
@@ -96,7 +112,7 @@ const CreateGoal = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col px-5 pt-12 pb-8 safe-area-inset">
       {/* Step Indicator */}
-      <OnboardingStepIndicator currentStep={1} />
+      <OnboardingStepIndicator currentStep={1} showBack={false} />
 
       {/* Header */}
       <div className="mb-6">

@@ -14,10 +14,25 @@ const frequencyOptions = [
 const Frequency = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedFrequency, setSelectedFrequency] = useState<string | null>(null);
 
-  // Get project ID from navigation state
+  // Get data from navigation state
   const projectId = location.state?.projectId as string | undefined;
+  const goalData = location.state?.goalData;
+  const tasksData = location.state?.tasksData;
+  const restoredFrequency = location.state?.frequency as string | null;
+
+  const [selectedFrequency, setSelectedFrequency] = useState<string | null>(restoredFrequency);
+
+  const handleBack = () => {
+    // Navigate back to AddTasks with all state preserved
+    navigate('/add-tasks', { 
+      state: { 
+        projectId, 
+        goalData,
+        tasksData,
+      } 
+    });
+  };
 
   const handleSubmit = () => {
     if (!selectedFrequency) {
@@ -25,14 +40,21 @@ const Frequency = () => {
       return;
     }
 
-    // Navigate to confirmation screen with projectId
-    navigate('/goal-created', { state: { projectId } });
+    // Navigate to confirmation screen with all data
+    navigate('/goal-created', { 
+      state: { 
+        projectId,
+        goalData,
+        tasksData,
+        frequency: selectedFrequency,
+      } 
+    });
   };
 
   return (
     <div className="min-h-screen bg-background flex flex-col px-5 pt-12 pb-8 safe-area-inset">
       {/* Step Indicator */}
-      <OnboardingStepIndicator currentStep={3} />
+      <OnboardingStepIndicator currentStep={3} onBack={handleBack} />
 
       {/* Header */}
       <div className="mb-6">
