@@ -53,7 +53,7 @@ export const ProjectCard: FC<ProjectCardProps> = ({
             <span className={cn("text-sm font-semibold", textColor)}>{progress} %</span>
           </div>
           
-          <div className="h-2 rounded-full overflow-hidden" style={{
+          <div className="h-3 rounded-full overflow-hidden" style={{
           backgroundColor: isLight ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.2)'
         }}>
             <div className="h-full rounded-full transition-all duration-500" style={{
