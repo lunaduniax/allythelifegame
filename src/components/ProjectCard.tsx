@@ -17,7 +17,7 @@ const isLightColor = (hslColor: string): boolean => {
   const parts = hslColor.split(' ');
   if (parts.length >= 3) {
     const lightness = parseFloat(parts[2]);
-    return lightness > 50;
+    return lightness >= 45;
   }
   return true;
 };
