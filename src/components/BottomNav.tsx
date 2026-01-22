@@ -41,14 +41,18 @@ export const BottomNav: FC<BottomNavProps> = ({ activeTab, onTabChange, onCreate
               onClick={() => onTabChange(item.id)}
               className={cn(
                 "flex flex-col items-center gap-1 p-2 rounded-lg transition-colors",
-                isActive ? "text-foreground" : "text-muted-foreground"
+                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
               )}
             >
               <div className={cn(
-                "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
-                isActive && "bg-secondary"
+                "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
+                isActive && "bg-primary/15"
               )}>
-                <Icon size={20} />
+                <Icon 
+                  size={20} 
+                  fill={isActive ? "currentColor" : "none"}
+                  strokeWidth={isActive ? 1.5 : 2}
+                />
               </div>
             </button>
           );
