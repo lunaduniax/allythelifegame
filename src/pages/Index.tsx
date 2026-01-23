@@ -13,6 +13,7 @@ interface AppShellContext {
   createNotification: (title: string, message: string) => Promise<void>;
   openCreateFlow: () => void;
   openAllyGPT: (projectContext: { id: string; name: string; category: string } | null) => void;
+  isDemoMode?: boolean;
 }
 
 interface IndexProps {
@@ -25,6 +26,7 @@ const Index = ({ initialProjectId }: IndexProps) => {
   const createNotification = context?.createNotification;
   const openCreateFlow = context?.openCreateFlow;
   const openAllyGPT = context?.openAllyGPT;
+  const isDemoMode = context?.isDemoMode || false;
   
   const {
     projects,
@@ -42,12 +44,21 @@ const Index = ({ initialProjectId }: IndexProps) => {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
   const handleCreateTask = (data: { title: string; category: string; date: string; description: string }) => {
+    if (isDemoMode) {
+      toast.info('Modo demo', { description: 'Inicia sesión para crear tareas' });
+      return;
+    }
     if (selectedProjectId) {
       addTask(selectedProjectId, data);
     }
   };
 
   const handleDeleteProject = async (projectId: string) => {
+    if (isDemoMode) {
+      toast.info('Modo demo', { description: 'Inicia sesión para eliminar metas' });
+      return;
+    }
+    
     const { success, remainingProjects } = await deleteProject(projectId);
     
     if (success) {
@@ -84,7 +95,9 @@ const Index = ({ initialProjectId }: IndexProps) => {
     status: t.status,
   }));
 
-  const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'Usuario';
+  const userName = isDemoMode 
+    ? 'Usuario Demo' 
+    : (user?.user_metadata?.name || user?.email?.split('@')[0] || 'Usuario');
 
   // Show loading state
   if (loading) {
@@ -151,6 +164,10 @@ const Index = ({ initialProjectId }: IndexProps) => {
           projectColor={mappedSelectedProject.color}
           tasks={mappedTasks}
           onCompleteTask={async (taskId) => {
+            if (isDemoMode) {
+              toast.info('Modo demo', { description: 'Inicia sesión para completar tareas' });
+              return;
+            }
             const task = mappedTasks.find(t => t.id === taskId);
             await completeTask(taskId);
             if (task && createNotification) {
@@ -160,7 +177,13 @@ const Index = ({ initialProjectId }: IndexProps) => {
               );
             }
           }}
-          onCreateTask={() => setIsTaskModalOpen(true)}
+          onCreateTask={() => {
+            if (isDemoMode) {
+              toast.info('Modo demo', { description: 'Inicia sesión para crear tareas' });
+              return;
+            }
+            setIsTaskModalOpen(true);
+          }}
         />
       )}
 

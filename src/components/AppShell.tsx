@@ -4,8 +4,10 @@ import { BottomNav } from '@/components/BottomNav';
 import { CreateGoalFlow } from '@/components/CreateGoalFlow';
 import { AllyGPTChat } from '@/components/AllyGPTChat';
 import ProfileOnboardingModal from '@/components/ProfileOnboardingModal';
+import { DemoModeBanner } from '@/components/DemoModeBanner';
 import { useUserProjects } from '@/hooks/useUserProjects';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useDemoMode } from '@/contexts/DemoModeContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -14,6 +16,7 @@ export const AppShell = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { isDemoMode } = useDemoMode();
   const [isCreateFlowOpen, setIsCreateFlowOpen] = useState(false);
   const [isAllyGPTOpen, setIsAllyGPTOpen] = useState(false);
   const [profileOnboardingComplete, setProfileOnboardingComplete] = useState(false);
@@ -25,12 +28,12 @@ export const AppShell = () => {
   const { projects, addProject, refetch, hasFetched } = useUserProjects();
   const { unreadCount, createNotification } = useNotifications();
 
-  // Auto-open modal when user has 0 goals
+  // Auto-open modal when user has 0 goals (only for authenticated users, not demo mode)
   useEffect(() => {
-    if (hasFetched && projects.length === 0 && !isCreateFlowOpen) {
+    if (!isDemoMode && hasFetched && projects.length === 0 && !isCreateFlowOpen) {
       setIsCreateFlowOpen(true);
     }
-  }, [hasFetched, projects.length]);
+  }, [hasFetched, projects.length, isDemoMode]);
 
   // Determine active tab based on current route
   const getActiveTab = (): 'home' | 'create' | 'notifications' | 'profile' => {
@@ -166,14 +169,30 @@ export const AppShell = () => {
     toast.success(`${tasks.length} tareas agregadas`);
   };
 
+  // Demo mode action handler - shows toast instead of performing action
+  const handleDemoAction = (actionName: string) => {
+    toast.info('Modo demo', {
+      description: 'Inicia sesión para ' + actionName,
+    });
+    return;
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <DemoModeBanner />
       <div className="pb-24">
         <Outlet
           context={{
-            createNotification,
-            openCreateFlow: () => setIsCreateFlowOpen(true),
-            openAllyGPT: handleOpenAllyGPT,
+            createNotification: isDemoMode 
+              ? () => handleDemoAction('recibir notificaciones') 
+              : createNotification,
+            openCreateFlow: isDemoMode 
+              ? () => handleDemoAction('crear metas') 
+              : () => setIsCreateFlowOpen(true),
+            openAllyGPT: isDemoMode 
+              ? () => handleDemoAction('usar AllyGPT') 
+              : handleOpenAllyGPT,
+            isDemoMode,
           }}
         />
       </div>
@@ -181,28 +200,34 @@ export const AppShell = () => {
       <BottomNav
         activeTab={getActiveTab()}
         onTabChange={handleTabChange}
-        onCreateTask={() => setIsCreateFlowOpen(true)}
+        onCreateTask={isDemoMode 
+          ? () => handleDemoAction('crear tareas') 
+          : () => setIsCreateFlowOpen(true)}
         unreadNotifications={unreadCount}
       />
 
-      <CreateGoalFlow
-        isOpen={isCreateFlowOpen}
-        onClose={() => setIsCreateFlowOpen(false)}
-        onComplete={handleCreateComplete}
-      />
+      {!isDemoMode && (
+        <>
+          <CreateGoalFlow
+            isOpen={isCreateFlowOpen}
+            onClose={() => setIsCreateFlowOpen(false)}
+            onComplete={handleCreateComplete}
+          />
 
-      <AllyGPTChat
-        isOpen={isAllyGPTOpen}
-        onClose={() => setIsAllyGPTOpen(false)}
-        projectContext={selectedProjectContext}
-        onCreateGoal={handleCreateGoalFromAllyGPT}
-        onAddTasks={handleAddTasksFromAllyGPT}
-      />
+          <AllyGPTChat
+            isOpen={isAllyGPTOpen}
+            onClose={() => setIsAllyGPTOpen(false)}
+            projectContext={selectedProjectContext}
+            onCreateGoal={handleCreateGoalFromAllyGPT}
+            onAddTasks={handleAddTasksFromAllyGPT}
+          />
 
-      <ProfileOnboardingModal
-        user={user}
-        onComplete={() => setProfileOnboardingComplete(true)}
-      />
+          <ProfileOnboardingModal
+            user={user}
+            onComplete={() => setProfileOnboardingComplete(true)}
+          />
+        </>
+      )}
     </div>
   );
 };

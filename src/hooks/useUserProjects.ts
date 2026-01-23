@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { mockDemoProjects, mockDemoTasks } from '@/data/mockDemoData';
 
 export interface DbProject {
   id: string;
@@ -28,6 +29,18 @@ export interface DbTask {
   updated_at: string;
 }
 
+// Check if we're in a preview/development environment
+const isPreviewEnvironment = (): boolean => {
+  const hostname = window.location.hostname;
+  return (
+    hostname === 'localhost' ||
+    hostname.includes('127.0.0.1') ||
+    hostname.includes('preview') ||
+    hostname.includes('lovable.app') ||
+    import.meta.env.DEV
+  );
+};
+
 export function useUserProjects(initialSelectedId?: string | null) {
   const { user, loading: authLoading } = useAuth();
   const [projects, setProjects] = useState<DbProject[]>([]);
@@ -35,6 +48,9 @@ export function useUserProjects(initialSelectedId?: string | null) {
   const [loading, setLoading] = useState(true);
   const [hasFetched, setHasFetched] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  
+  // Check if we're in demo mode (preview environment + no user)
+  const isDemoMode = isPreviewEnvironment() && !user && !authLoading;
   
   // Store the initial ID in a ref to persist across renders and fetches
   const initialIdRef = useRef<string | null>(initialSelectedId || null);
@@ -53,7 +69,23 @@ export function useUserProjects(initialSelectedId?: string | null) {
     }
   }, [initialSelectedId, projects]);
 
+  // Handle demo mode - use mock data
+  useEffect(() => {
+    if (isDemoMode) {
+      setProjects(mockDemoProjects);
+      setTasks(mockDemoTasks);
+      setSelectedProjectId(mockDemoProjects[0]?.id || null);
+      setLoading(false);
+      setHasFetched(true);
+    }
+  }, [isDemoMode]);
+
   const fetchProjects = useCallback(async (forceRefresh = false) => {
+    // Don't fetch if in demo mode
+    if (isDemoMode) {
+      return;
+    }
+    
     // Don't fetch if auth is still loading - wait for it
     if (authLoading) {
       return;
