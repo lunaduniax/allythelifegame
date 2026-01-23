@@ -27,6 +27,13 @@ import { es } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import OnboardingStepIndicator from '@/components/OnboardingStepIndicator';
 
+const frequencyOptions = [
+  'Todos los días',
+  '3 veces por semana',
+  'Una vez por semana',
+  'Prefiero no recibir recordatorios',
+];
+
 const goalSchema = z.object({
   name: z.string().min(1, 'La meta es requerida').max(200, 'La meta es muy larga'),
   category: z.string().min(1, 'La categoría es requerida'),
@@ -56,6 +63,9 @@ const CreateGoal = () => {
   const [importance, setImportance] = useState(restoredState?.importance || '');
   const [targetDate, setTargetDate] = useState<Date | undefined>(
     restoredState?.targetDate ? new Date(restoredState.targetDate) : undefined
+  );
+  const [reminderFrequency, setReminderFrequency] = useState(
+    restoredState?.reminderFrequency || '3 veces por semana'
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -97,6 +107,7 @@ const CreateGoal = () => {
                 category,
                 importance,
                 targetDate: targetDate?.toISOString(),
+                reminderFrequency,
               },
             },
           });
@@ -110,6 +121,7 @@ const CreateGoal = () => {
         category: validatedData.category,
         importance: validatedData.importance || null,
         target_date: targetDate ? format(targetDate, 'yyyy-MM-dd') : null,
+        reminder_frequency: reminderFrequency,
         color: '#D4FE00',
       }).select().single();
 
@@ -128,8 +140,9 @@ const CreateGoal = () => {
             category,
             importance,
             targetDate: targetDate?.toISOString(),
+            reminderFrequency,
           }
-        } 
+        }
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -145,7 +158,7 @@ const CreateGoal = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col px-5 pt-12 pb-8 safe-area-inset">
       {/* Step Indicator */}
-      <OnboardingStepIndicator currentStep={1} />
+      <OnboardingStepIndicator currentStep={1} totalSteps={2} showBack={false} />
 
       {/* Header */}
       <div className="mb-6">
@@ -229,6 +242,27 @@ const CreateGoal = () => {
               />
             </PopoverContent>
           </Popover>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-sm text-muted-foreground">
+            ¿Con qué frecuencia querés trabajar en esta meta?
+          </Label>
+          <p className="text-xs text-primary mb-2">
+            Te vamos a mandar recordatorios motivacionales :D
+          </p>
+          <Select value={reminderFrequency} onValueChange={setReminderFrequency}>
+            <SelectTrigger className="h-14 bg-card border-border rounded-lg text-foreground">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {frequencyOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="mt-auto pt-6">

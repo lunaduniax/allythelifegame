@@ -50,12 +50,10 @@ const AddTasks = () => {
     const validTasks = tasks.filter((t) => t.trim().length > 0);
 
     if (validTasks.length === 0) {
-      // No tasks added, just go to frequency
-      navigate('/frequency', { 
+      // No tasks added, go directly to home
+      navigate('/', { 
         state: { 
-          projectId, 
-          goalData,
-          tasksData: tasks,
+          selectedProjectId: projectId,
         } 
       });
       return;
@@ -88,12 +86,10 @@ const AddTasks = () => {
         return;
       }
 
-      toast.success('¡Tareas creadas exitosamente!');
-      navigate('/frequency', { 
+      toast.success('¡Meta creada exitosamente!');
+      navigate('/', { 
         state: { 
-          projectId, 
-          goalData,
-          tasksData: tasks,
+          selectedProjectId: projectId,
         } 
       });
     } catch (error) {
@@ -106,7 +102,7 @@ const AddTasks = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col px-5 pt-12 pb-8 safe-area-inset">
       {/* Step Indicator */}
-      <OnboardingStepIndicator currentStep={2} onBack={handleBack} />
+      <OnboardingStepIndicator currentStep={2} totalSteps={2} onBack={handleBack} />
 
       {/* Header */}
       <div className="mb-6">

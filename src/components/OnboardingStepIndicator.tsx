@@ -1,7 +1,7 @@
 import { ChevronLeft } from 'lucide-react';
 
 interface OnboardingStepIndicatorProps {
-  currentStep: 1 | 2 | 3;
+  currentStep: 1 | 2;
   totalSteps?: number;
   onBack?: () => void;
   showBack?: boolean;
