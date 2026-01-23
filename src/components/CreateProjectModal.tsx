@@ -1,4 +1,5 @@
 import { FC, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -17,11 +18,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 
 interface CreateProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { name: string; category: string; color: string; importance?: string; targetDate?: string; reminderFrequency: string }) => void;
+  onSuccess?: () => Promise<void>;
   currentStep?: 1 | 2;
   totalSteps?: number;
 }
@@ -45,37 +49,90 @@ const colorOptions = [
 export const CreateProjectModal: FC<CreateProjectModalProps> = ({
   isOpen,
   onClose,
-  onSubmit,
+  onSuccess,
   currentStep = 1,
-  totalSteps = 2,
+  totalSteps = 1,
 }) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
   const [color, setColor] = useState(colorOptions[0].value);
   const [importance, setImportance] = useState('');
   const [targetDate, setTargetDate] = useState<Date | undefined>(undefined);
   const [reminderFrequency, setReminderFrequency] = useState('3 veces por semana');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim() || !category.trim()) return;
-
-    onSubmit({
-      name: name.trim(),
-      category: category.trim(),
-      color,
-      importance: importance.trim() || undefined,
-      targetDate: targetDate ? format(targetDate, 'yyyy-MM-dd') : undefined,
-      reminderFrequency,
-    });
-
+  const resetForm = () => {
     setName('');
     setCategory('');
     setColor(colorOptions[0].value);
     setImportance('');
     setTargetDate(undefined);
     setReminderFrequency('3 veces por semana');
-    onClose();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate required fields
+    if (!name.trim()) {
+      toast.error('El título de la meta es requerido');
+      return;
+    }
+    if (!category.trim()) {
+      toast.error('La categoría es requerida');
+      return;
+    }
+
+    if (!user) {
+      toast.error('Debes iniciar sesión para crear una meta');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .insert({
+          user_id: user.id,
+          name: name.trim(),
+          category: category.trim(),
+          color,
+          importance: importance.trim() || null,
+          target_date: targetDate ? format(targetDate, 'yyyy-MM-dd') : null,
+          reminder_frequency: reminderFrequency,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating goal:', error);
+        toast.error('Error al crear la meta. Por favor, intenta de nuevo.');
+        return;
+      }
+
+      // Success!
+      toast.success('Meta creada ✅');
+      
+      // Reset form and close modal
+      resetForm();
+      onClose();
+      
+      // Trigger refetch if callback provided
+      if (onSuccess) {
+        await onSuccess();
+      }
+      
+      // Navigate to /home with the new project selected
+      navigate('/', { state: { selectedProjectId: data.id } });
+    } catch (err) {
+      console.error('Unexpected error creating goal:', err);
+      toast.error('Error inesperado. Por favor, intenta de nuevo.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -257,10 +314,10 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
 
               <button
                 type="submit"
-                disabled={!name.trim() || !category.trim()}
+                disabled={!name.trim() || !category.trim() || isSubmitting}
                 className="w-full bg-primary text-primary-foreground font-semibold py-4 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
               >
-                Listo, siguiente!
+                {isSubmitting ? 'Creando...' : 'Listo, crear meta!'}
               </button>
             </form>
             </div>
