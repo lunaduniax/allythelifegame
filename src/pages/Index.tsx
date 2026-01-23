@@ -4,6 +4,7 @@ import { Header } from '@/components/Header';
 import { ProjectsCarousel } from '@/components/ProjectsCarousel';
 import { TasksList } from '@/components/TasksList';
 import { CreateTaskModal } from '@/components/CreateTaskModal';
+import { AllyGPTBanner } from '@/components/AllyGPTBanner';
 import { useUserProjects } from '@/hooks/useUserProjects';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -125,6 +126,8 @@ const Index = ({ initialProjectId }: IndexProps) => {
         onCreateProject={openCreateFlow || (() => {})}
         onDeleteProject={handleDeleteProject}
       />
+
+      <AllyGPTBanner onStartAllyGPT={openCreateFlow || (() => {})} />
 
       {mappedSelectedProject && (
         <TasksList
