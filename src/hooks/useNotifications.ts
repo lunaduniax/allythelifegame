@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { mockDemoNotifications } from '@/data/mockDemoData';
 
 export interface Notification {
   id: string;
@@ -11,13 +12,39 @@ export interface Notification {
   created_at: string;
 }
 
+// Check if we're in a preview/development environment
+const isPreviewEnvironment = (): boolean => {
+  const hostname = window.location.hostname;
+  return (
+    hostname === 'localhost' ||
+    hostname.includes('127.0.0.1') ||
+    hostname.includes('preview') ||
+    hostname.includes('lovable.app') ||
+    import.meta.env.DEV
+  );
+};
+
 export const useNotifications = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
 
+  // Check if we're in demo mode
+  const isDemoMode = isPreviewEnvironment() && !user && !authLoading;
+
+  // Handle demo mode
+  useEffect(() => {
+    if (isDemoMode) {
+      setNotifications(mockDemoNotifications as Notification[]);
+      setUnreadCount(mockDemoNotifications.filter(n => !n.read).length);
+      setLoading(false);
+    }
+  }, [isDemoMode]);
+
   const fetchNotifications = useCallback(async () => {
+    if (isDemoMode) return;
+    
     if (!user) {
       setNotifications([]);
       setUnreadCount(0);
@@ -42,7 +69,7 @@ export const useNotifications = () => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, isDemoMode]);
 
   useEffect(() => {
     fetchNotifications();

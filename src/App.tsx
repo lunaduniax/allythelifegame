@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProjects } from "@/hooks/useUserProjects";
+import { DemoModeProvider } from "@/contexts/DemoModeContext";
 import { AppShell } from "@/components/AppShell";
 import DesktopWrapper from "@/components/DesktopWrapper";
 import Index from "./pages/Index";
@@ -18,6 +19,18 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Check if we're in a preview/development environment
+const isPreviewEnvironment = (): boolean => {
+  const hostname = window.location.hostname;
+  return (
+    hostname === 'localhost' ||
+    hostname.includes('127.0.0.1') ||
+    hostname.includes('preview') ||
+    hostname.includes('lovable.app') ||
+    import.meta.env.DEV
+  );
+};
+
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading: authLoading } = useAuth();
 
@@ -29,6 +42,12 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
+  // In preview environment, allow unauthenticated access (demo mode)
+  if (!user && isPreviewEnvironment()) {
+    return <>{children}</>;
+  }
+
+  // In production, redirect to auth if not authenticated
   if (!user) {
     return <Navigate to="/auth" replace />;
   }
@@ -63,38 +82,48 @@ const HomeContent = () => {
   return <Index initialProjectId={initialProjectId} />;
 };
 
+const AppWithDemoMode = () => {
+  const { user } = useAuth();
+  
+  return (
+    <DemoModeProvider isAuthenticated={!!user}>
+      <DesktopWrapper>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/auth" element={<Auth />} />
+
+          {/* Main app routes with persistent bottom nav */}
+          <Route
+            element={
+              <ProtectedRoute>
+                <AppShell />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/" element={<HomeContent />} />
+            <Route path="/home" element={<HomeContent />} />
+            <Route path="/account" element={<Account />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/help" element={<Help />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/notifications" element={<Notifications />} />
+          </Route>
+
+          {/* Catch-all */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </DesktopWrapper>
+    </DemoModeProvider>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <DesktopWrapper>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/auth" element={<Auth />} />
-
-            {/* Main app routes with persistent bottom nav */}
-            <Route
-              element={
-                <ProtectedRoute>
-                  <AppShell />
-                </ProtectedRoute>
-              }
-            >
-              <Route path="/" element={<HomeContent />} />
-              <Route path="/home" element={<HomeContent />} />
-              <Route path="/account" element={<Account />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/help" element={<Help />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/notifications" element={<Notifications />} />
-            </Route>
-
-            {/* Catch-all */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </DesktopWrapper>
+        <AppWithDemoMode />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

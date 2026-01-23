@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Camera } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useDemoMode } from '@/contexts/DemoModeContext';
+import { mockDemoProfile } from '@/data/mockDemoData';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -23,6 +25,7 @@ interface ProfileData {
 const Account = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { isDemoMode } = useDemoMode();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState<ProfileData>({
@@ -34,10 +37,20 @@ const Account = () => {
   });
 
   useEffect(() => {
-    if (user) {
+    if (isDemoMode) {
+      // Use mock data for demo mode
+      setProfile({
+        name: mockDemoProfile.name || '',
+        email: mockDemoProfile.email || '',
+        username: mockDemoProfile.username || '',
+        phone_number: mockDemoProfile.phone_number || '',
+        avatar_url: mockDemoProfile.avatar_url,
+      });
+      setLoading(false);
+    } else if (user) {
       fetchProfile();
     }
-  }, [user]);
+  }, [user, isDemoMode]);
 
   const fetchProfile = async () => {
     if (!user) return;
@@ -66,6 +79,11 @@ const Account = () => {
   };
 
   const handleSave = async () => {
+    if (isDemoMode) {
+      toast.info('Modo demo', { description: 'Inicia sesión para guardar cambios' });
+      return;
+    }
+    
     if (!user) return;
 
     // Validate input before saving
@@ -103,6 +121,10 @@ const Account = () => {
   };
 
   const handleLogout = async () => {
+    if (isDemoMode) {
+      navigate('/auth', { replace: true });
+      return;
+    }
     await supabase.auth.signOut();
     navigate('/auth', { replace: true });
   };
