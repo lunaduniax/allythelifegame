@@ -290,6 +290,51 @@ export function useUserProjects(initialSelectedId?: string | null) {
     [user]
   );
 
+  const deleteProject = useCallback(
+    async (projectId: string): Promise<{ success: boolean; remainingProjects: DbProject[] }> => {
+      if (!user) return { success: false, remainingProjects: projects };
+
+      // First delete all tasks for this project
+      const { error: tasksError } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('project_id', projectId)
+        .eq('user_id', user.id);
+
+      if (tasksError) {
+        console.error('Error deleting project tasks:', tasksError);
+        return { success: false, remainingProjects: projects };
+      }
+
+      // Then delete the project
+      const { error: projectError } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', projectId)
+        .eq('user_id', user.id);
+
+      if (projectError) {
+        console.error('Error deleting project:', projectError);
+        return { success: false, remainingProjects: projects };
+      }
+
+      // Update local state
+      const newProjects = projects.filter((p) => p.id !== projectId);
+      const newTasks = tasks.filter((t) => t.project_id !== projectId);
+      
+      setProjects(newProjects);
+      setTasks(newTasks);
+
+      // If the deleted project was selected, select the first remaining one
+      if (selectedProjectId === projectId) {
+        setSelectedProjectId(newProjects.length > 0 ? newProjects[0].id : null);
+      }
+
+      return { success: true, remainingProjects: newProjects };
+    },
+    [user, projects, tasks, selectedProjectId]
+  );
+
   const inProgressTasks = selectedProject
     ? tasks.filter((t) => t.project_id === selectedProject.id && t.status === 'in_progress')
     : [];
@@ -307,6 +352,7 @@ export function useUserProjects(initialSelectedId?: string | null) {
     completeTask,
     addTask,
     addProject,
+    deleteProject,
     inProgressTasks,
     refetch: () => fetchProjects(true),
   };

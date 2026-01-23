@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { ProjectsCarousel } from '@/components/ProjectsCarousel';
 import { TasksList } from '@/components/TasksList';
@@ -7,6 +8,7 @@ import { CreateTaskModal } from '@/components/CreateTaskModal';
 import { CreateProjectModal } from '@/components/CreateProjectModal';
 import { useUserProjects } from '@/hooks/useUserProjects';
 import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 
 interface IndexProps {
   initialProjectId?: string | null;
@@ -14,6 +16,7 @@ interface IndexProps {
 
 const Index = ({ initialProjectId }: IndexProps) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   
   const {
     projects,
@@ -24,6 +27,7 @@ const Index = ({ initialProjectId }: IndexProps) => {
     completeTask,
     addTask,
     addProject,
+    deleteProject,
     inProgressTasks,
     loading,
   } = useUserProjects(initialProjectId);
@@ -40,6 +44,21 @@ const Index = ({ initialProjectId }: IndexProps) => {
 
   const handleCreateProject = (data: { name: string; category: string; color: string }) => {
     addProject(data);
+  };
+
+  const handleDeleteProject = async (projectId: string) => {
+    const { success, remainingProjects } = await deleteProject(projectId);
+    
+    if (success) {
+      toast.success('Meta eliminada');
+      
+      // If no projects remain, redirect to onboarding
+      if (remainingProjects.length === 0) {
+        navigate('/create-goal', { replace: true });
+      }
+    } else {
+      toast.error('Error al eliminar la meta');
+    }
   };
 
   // Map DbProject to component-compatible format
@@ -94,6 +113,7 @@ const Index = ({ initialProjectId }: IndexProps) => {
         onSelectProject={setSelectedProjectId}
         getProgress={(project) => getProjectProgress(project.id)}
         onCreateProject={() => setIsProjectModalOpen(true)}
+        onDeleteProject={handleDeleteProject}
       />
 
       <TasksList
