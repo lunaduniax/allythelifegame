@@ -2,16 +2,24 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { BottomNav } from '@/components/BottomNav';
 import { CreateGoalFlow } from '@/components/CreateGoalFlow';
+import { AllyGPTChat } from '@/components/AllyGPTChat';
 import { useUserProjects } from '@/hooks/useUserProjects';
 import { useNotifications } from '@/hooks/useNotifications';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 
 export const AppShell = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isCreateFlowOpen, setIsCreateFlowOpen] = useState(false);
+  const [isAllyGPTOpen, setIsAllyGPTOpen] = useState(false);
+  const [selectedProjectContext, setSelectedProjectContext] = useState<{
+    id: string;
+    name: string;
+    category: string;
+  } | null>(null);
   const { projects, addProject, refetch, hasFetched } = useUserProjects();
   const { unreadCount, createNotification } = useNotifications();
 
@@ -52,7 +60,6 @@ export const AppShell = () => {
     },
     tasks: string[]
   ) => {
-    // Create the project
     const newProject = await addProject({
       name: projectData.name,
       category: projectData.category,
@@ -63,7 +70,6 @@ export const AppShell = () => {
     });
 
     if (newProject && user) {
-      // Create tasks for this project
       if (tasks.length > 0) {
         const taskInserts = tasks.map(title => ({
           user_id: user.id,
@@ -71,11 +77,9 @@ export const AppShell = () => {
           title,
           status: 'in_progress',
         }));
-
         await supabase.from('tasks').insert(taskInserts);
       }
 
-      // Create notifications
       await createNotification(
         'Nueva meta creada',
         `Has creado la meta "${projectData.name}". ¡Vamos a lograrla!`
@@ -88,23 +92,90 @@ export const AppShell = () => {
         );
       }
 
-      // Refresh projects and close modal
       await refetch();
       setIsCreateFlowOpen(false);
-
-      // Navigate to home with new project selected
       navigate('/', { state: { selectedProjectId: newProject.id } });
     }
   };
 
+  // AllyGPT handlers
+  const handleOpenAllyGPT = (projectContext: { id: string; name: string; category: string } | null) => {
+    setSelectedProjectContext(projectContext);
+    setIsAllyGPTOpen(true);
+  };
+
+  const handleCreateGoalFromAllyGPT = async (
+    goal: { name: string; category: string },
+    tasks: string[]
+  ) => {
+    const newProject = await addProject({
+      name: goal.name,
+      category: goal.category,
+      color: '#D4FE00',
+      reminderFrequency: '3 veces por semana',
+    });
+
+    if (newProject && user) {
+      if (tasks.length > 0) {
+        const taskInserts = tasks.map(title => ({
+          user_id: user.id,
+          project_id: newProject.id,
+          title,
+          status: 'in_progress',
+        }));
+        await supabase.from('tasks').insert(taskInserts);
+      }
+
+      await createNotification(
+        'Nueva meta creada con AllyGPT',
+        `AllyGPT te ayudó a crear la meta "${goal.name}". ¡Vamos a lograrla!`
+      );
+
+      await refetch();
+      toast.success('Meta creada con éxito');
+      navigate('/', { state: { selectedProjectId: newProject.id } });
+    }
+  };
+
+  const handleAddTasksFromAllyGPT = async (projectId: string, tasks: string[]) => {
+    if (!user || tasks.length === 0) return;
+
+    const taskInserts = tasks.map(title => ({
+      user_id: user.id,
+      project_id: projectId,
+      title,
+      status: 'in_progress',
+    }));
+
+    const { error } = await supabase.from('tasks').insert(taskInserts);
+
+    if (error) {
+      console.error('Error adding tasks:', error);
+      toast.error('Error al agregar tareas');
+      return;
+    }
+
+    await createNotification(
+      'Tareas agregadas',
+      `AllyGPT agregó ${tasks.length} tareas nuevas a tu meta.`
+    );
+
+    await refetch();
+    toast.success(`${tasks.length} tareas agregadas`);
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Main content with bottom padding for nav */}
       <div className="pb-24">
-        <Outlet context={{ createNotification, openCreateFlow: () => setIsCreateFlowOpen(true) }} />
+        <Outlet
+          context={{
+            createNotification,
+            openCreateFlow: () => setIsCreateFlowOpen(true),
+            openAllyGPT: handleOpenAllyGPT,
+          }}
+        />
       </div>
 
-      {/* Persistent Bottom Nav */}
       <BottomNav
         activeTab={getActiveTab()}
         onTabChange={handleTabChange}
@@ -112,11 +183,18 @@ export const AppShell = () => {
         unreadNotifications={unreadCount}
       />
 
-      {/* Create Goal Flow Modal */}
       <CreateGoalFlow
         isOpen={isCreateFlowOpen}
         onClose={() => setIsCreateFlowOpen(false)}
         onComplete={handleCreateComplete}
+      />
+
+      <AllyGPTChat
+        isOpen={isAllyGPTOpen}
+        onClose={() => setIsAllyGPTOpen(false)}
+        projectContext={selectedProjectContext}
+        onCreateGoal={handleCreateGoalFromAllyGPT}
+        onAddTasks={handleAddTasksFromAllyGPT}
       />
     </div>
   );
