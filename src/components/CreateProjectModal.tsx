@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { LoadingOverlay } from '@/components/LoadingOverlay';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -109,7 +110,8 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
 
       if (error) {
         console.error('Error creating goal:', error);
-        toast.error('Error al crear la meta. Por favor, intenta de nuevo.');
+        toast.error('No se pudo guardar. Probá de nuevo.');
+        setIsSubmitting(false);
         return;
       }
 
@@ -129,23 +131,31 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
       navigate('/', { state: { selectedProjectId: data.id } });
     } catch (err) {
       console.error('Unexpected error creating goal:', err);
-      toast.error('Error inesperado. Por favor, intenta de nuevo.');
-    } finally {
+      toast.error('No se pudo guardar. Probá de nuevo.');
       setIsSubmitting(false);
     }
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
-          />
+    <>
+      {/* Full-screen loading overlay */}
+      <LoadingOverlay
+        isVisible={isSubmitting}
+        message="Creando…"
+        delayedMessage="Esto puede tardar unos segundos"
+        delayMs={3000}
+      />
+
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={isSubmitting ? undefined : onClose}
+              className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
+            />
           <motion.div
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
@@ -325,5 +335,6 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
         </>
       )}
     </AnimatePresence>
+    </>
   );
 };
