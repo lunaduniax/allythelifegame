@@ -28,47 +28,15 @@ export const validatePassword = (password: string): boolean => {
 };
 
 const PasswordRequirements = ({ password, showHIBP = true }: PasswordRequirementsProps) => {
+  const allMet = password.length > 0 && requirements.every(req => req.check(password));
+  const hasInput = password.length > 0;
+
   return (
-    <div className="mt-2 p-3 rounded-lg bg-card/50 border border-border">
-      <p className="text-xs font-medium text-muted-foreground mb-2">
-        Requisitos de contraseña:
-      </p>
-      <ul className="space-y-1.5">
-        {requirements.map((req, index) => {
-          const isMet = password.length > 0 && req.check(password);
-          return (
-            <li
-              key={index}
-              className={cn(
-                'flex items-center gap-2 text-xs transition-colors',
-                password.length === 0
-                  ? 'text-muted-foreground'
-                  : isMet
-                  ? 'text-primary'
-                  : 'text-muted-foreground'
-              )}
-            >
-              {password.length > 0 ? (
-                isMet ? (
-                  <Check className="h-3 w-3 text-primary" />
-                ) : (
-                  <X className="h-3 w-3 text-destructive" />
-                )
-              ) : (
-                <span className="h-3 w-3 rounded-full border border-muted-foreground/50" />
-              )}
-              {req.label}
-            </li>
-          );
-        })}
-        {showHIBP && (
-          <li className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="h-3 w-3 rounded-full border border-muted-foreground/50" />
-            No debe ser una contraseña filtrada (HIBP)
-          </li>
-        )}
-      </ul>
-    </div>
+    <p className="text-xs text-muted-foreground mt-1.5">
+      <span className={hasInput && allMet ? 'text-primary' : ''}>
+        8+ caracteres, mayúscula, minúscula y número
+      </span>
+    </p>
   );
 };
 
