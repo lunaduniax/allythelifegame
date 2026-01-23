@@ -43,7 +43,10 @@ serve(async (req) => {
 
     if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceRoleKey) {
       console.error("Missing Supabase configuration");
-      throw new Error("Missing Supabase configuration");
+      return new Response(
+        JSON.stringify({ error: "Error de configuración del servidor" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     // Create client with user's auth to verify identity
@@ -81,7 +84,10 @@ serve(async (req) => {
 
     if (tasksError) {
       console.error("Error deleting tasks:", tasksError.message);
-      throw new Error(`Error al eliminar tareas: ${tasksError.message}`);
+      return new Response(
+        JSON.stringify({ error: "Error al eliminar datos de la cuenta. Por favor, intenta de nuevo." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
     console.log("Tasks deleted successfully");
 
@@ -93,7 +99,10 @@ serve(async (req) => {
 
     if (projectsError) {
       console.error("Error deleting projects:", projectsError.message);
-      throw new Error(`Error al eliminar metas: ${projectsError.message}`);
+      return new Response(
+        JSON.stringify({ error: "Error al eliminar datos de la cuenta. Por favor, intenta de nuevo." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
     console.log("Projects deleted successfully");
 
@@ -105,7 +114,10 @@ serve(async (req) => {
 
     if (notificationsError) {
       console.error("Error deleting notifications:", notificationsError.message);
-      throw new Error(`Error al eliminar notificaciones: ${notificationsError.message}`);
+      return new Response(
+        JSON.stringify({ error: "Error al eliminar datos de la cuenta. Por favor, intenta de nuevo." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
     console.log("Notifications deleted successfully");
 
@@ -117,7 +129,10 @@ serve(async (req) => {
 
     if (profileError) {
       console.error("Error deleting profile:", profileError.message);
-      throw new Error(`Error al eliminar perfil: ${profileError.message}`);
+      return new Response(
+        JSON.stringify({ error: "Error al eliminar datos de la cuenta. Por favor, intenta de nuevo." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
     console.log("Profile deleted successfully");
 
@@ -126,7 +141,10 @@ serve(async (req) => {
 
     if (deleteUserError) {
       console.error("Error deleting auth user:", deleteUserError.message);
-      throw new Error(`Error al eliminar cuenta: ${deleteUserError.message}`);
+      return new Response(
+        JSON.stringify({ error: "Error al eliminar la cuenta. Por favor, intenta de nuevo." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
     console.log("Auth user deleted successfully");
 
@@ -138,8 +156,9 @@ serve(async (req) => {
     );
   } catch (e) {
     console.error("delete-account error:", e);
+    // Return generic error to client, detailed error is only in logs
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Error desconocido" }),
+      JSON.stringify({ error: "Error al procesar la solicitud. Por favor, intenta de nuevo." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

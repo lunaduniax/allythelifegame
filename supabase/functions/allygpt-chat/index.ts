@@ -17,18 +17,95 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
+// Input validation helpers
+const MAX_MESSAGE_LENGTH = 5000;
+const MAX_MESSAGES = 50;
+const MAX_PROJECT_NAME_LENGTH = 200;
+const MAX_CATEGORY_LENGTH = 100;
+
 interface Message {
   role: "user" | "assistant";
   content: string;
 }
 
+interface ProjectContext {
+  id: string;
+  name: string;
+  category: string;
+}
+
 interface RequestBody {
   messages: Message[];
-  projectContext?: {
-    id: string;
-    name: string;
-    category: string;
-  } | null;
+  projectContext?: ProjectContext | null;
+}
+
+function isValidUUID(str: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(str);
+}
+
+function validateMessage(msg: unknown): msg is Message {
+  if (typeof msg !== 'object' || msg === null) return false;
+  const m = msg as Record<string, unknown>;
+  
+  if (m.role !== 'user' && m.role !== 'assistant') return false;
+  if (typeof m.content !== 'string') return false;
+  if (m.content.length === 0 || m.content.length > MAX_MESSAGE_LENGTH) return false;
+  
+  return true;
+}
+
+function validateProjectContext(ctx: unknown): ctx is ProjectContext | null {
+  if (ctx === null || ctx === undefined) return true;
+  if (typeof ctx !== 'object') return false;
+  
+  const c = ctx as Record<string, unknown>;
+  
+  if (typeof c.id !== 'string' || !isValidUUID(c.id)) return false;
+  if (typeof c.name !== 'string' || c.name.length === 0 || c.name.length > MAX_PROJECT_NAME_LENGTH) return false;
+  if (typeof c.category !== 'string' || c.category.length === 0 || c.category.length > MAX_CATEGORY_LENGTH) return false;
+  
+  return true;
+}
+
+function validateRequestBody(body: unknown): { valid: true; data: RequestBody } | { valid: false; error: string } {
+  if (typeof body !== 'object' || body === null) {
+    return { valid: false, error: 'Cuerpo de solicitud inválido' };
+  }
+  
+  const b = body as Record<string, unknown>;
+  
+  // Validate messages array
+  if (!Array.isArray(b.messages)) {
+    return { valid: false, error: 'Se requiere un array de mensajes' };
+  }
+  
+  if (b.messages.length === 0) {
+    return { valid: false, error: 'Se requiere al menos un mensaje' };
+  }
+  
+  if (b.messages.length > MAX_MESSAGES) {
+    return { valid: false, error: `Máximo ${MAX_MESSAGES} mensajes permitidos` };
+  }
+  
+  for (const msg of b.messages) {
+    if (!validateMessage(msg)) {
+      return { valid: false, error: 'Formato de mensaje inválido' };
+    }
+  }
+  
+  // Validate projectContext
+  if (!validateProjectContext(b.projectContext)) {
+    return { valid: false, error: 'Contexto de proyecto inválido' };
+  }
+  
+  return {
+    valid: true,
+    data: {
+      messages: b.messages as Message[],
+      projectContext: b.projectContext as ProjectContext | null | undefined,
+    },
+  };
 }
 
 const SYSTEM_PROMPT = `Sos AllyGPT, un asistente amigable y motivador que ayuda a los usuarios a organizar sus metas y tareas. Hablás en español rioplatense (vos, tenés, querés, etc.).
@@ -81,7 +158,11 @@ serve(async (req) => {
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
 
     if (!supabaseUrl || !supabaseAnonKey) {
-      throw new Error("Missing Supabase configuration");
+      console.error("Missing Supabase configuration");
+      return new Response(
+        JSON.stringify({ error: "Error de configuración del servidor" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
@@ -97,11 +178,34 @@ serve(async (req) => {
       );
     }
 
-    const { messages, projectContext }: RequestBody = await req.json();
+    // Parse and validate request body
+    let rawBody: unknown;
+    try {
+      rawBody = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: "JSON inválido en el cuerpo de la solicitud" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const validation = validateRequestBody(rawBody);
+    if (!validation.valid) {
+      return new Response(
+        JSON.stringify({ error: validation.error }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const { messages, projectContext } = validation.data;
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+      console.error("LOVABLE_API_KEY is not configured");
+      return new Response(
+        JSON.stringify({ error: "Error de configuración del servidor" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     // Build context-aware system prompt
@@ -173,8 +277,9 @@ serve(async (req) => {
     );
   } catch (e) {
     console.error("allygpt-chat error:", e);
+    // Return generic error to client, detailed error is only in logs
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Error desconocido" }),
+      JSON.stringify({ error: "Error procesando la solicitud. Por favor, intenta de nuevo." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
