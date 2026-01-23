@@ -76,7 +76,6 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate required fields
     if (!name.trim()) {
       toast.error('El título de la meta es requerido');
       return;
@@ -115,19 +114,14 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
         return;
       }
 
-      // Success!
       toast.success('Meta creada ✅');
-      
-      // Reset form and close modal
       resetForm();
       onClose();
       
-      // Trigger refetch if callback provided
       if (onSuccess) {
         await onSuccess();
       }
       
-      // Navigate to /home with the new project selected
       navigate('/', { state: { selectedProjectId: data.id } });
     } catch (err) {
       console.error('Unexpected error creating goal:', err);
@@ -138,7 +132,6 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
 
   return (
     <>
-      {/* Full-screen loading overlay */}
       <LoadingOverlay
         isVisible={isSubmitting}
         message="Creando…"
@@ -153,54 +146,58 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
               onClick={isSubmitting ? undefined : onClose}
-              className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
+              className="fixed inset-0 bg-background/90 backdrop-blur-md z-50"
             />
           <motion.div
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 100 }}
-            className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-2xl border-t border-border max-h-[90vh] overflow-y-auto"
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl rounded-t-3xl border-t border-border/30 max-h-[90vh] overflow-y-auto shadow-soft-lg"
           >
-            {/* Sticky Header with Close Button */}
-            <div className="sticky top-0 z-10 bg-card pt-6 px-6 pb-4 border-b border-border/50">
+            {/* Header with Close Button */}
+            <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-xl pt-6 px-6 pb-4">
               <div className="flex items-center justify-end">
-                <button
+                <motion.button
                   type="button"
                   onClick={onClose}
                   disabled={isSubmitting}
-                  className="w-10 h-10 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors disabled:opacity-50"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-10 h-10 flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all duration-200 disabled:opacity-50"
                   aria-label="Cerrar"
                 >
-                  <X size={24} />
-                </button>
+                  <X size={22} />
+                </motion.button>
               </div>
             </div>
 
             {/* Modal Content */}
-            <div className="p-6 pb-8">
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold">¿Qué querés lograr?</h2>
-                <p className="text-sm text-primary mt-1">
+            <div className="p-6 pb-10">
+              <div className="mb-8">
+                <h2 className="text-2xl font-semibold tracking-tight">¿Qué querés lograr?</h2>
+                <p className="text-sm text-primary/80 mt-2 leading-relaxed">
                   Conectá con tu propósito, esto te va a ayudar cuando flaquee la motivación.
                 </p>
               </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-muted-foreground block mb-2">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground block">
                   Escribí tu meta…
                 </label>
                 <input
                   type="text"
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  className="w-full bg-input border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full bg-input/50 border border-border/30 rounded-2xl px-5 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 transition-all duration-200"
                 />
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-muted-foreground block mb-2">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground block">
                   ¿En qué categoría está?
                 </label>
                 <input
@@ -208,24 +205,24 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
                   value={category}
                   onChange={e => setCategory(e.target.value)}
                   placeholder="Ej: Work, Personal, Side project..."
-                  className="w-full bg-input border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full bg-input/50 border border-border/30 rounded-2xl px-5 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 transition-all duration-200"
                 />
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-muted-foreground block mb-2">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground block">
                   ¿Por qué es importante?
                 </label>
                 <textarea
                   value={importance}
                   onChange={e => setImportance(e.target.value)}
                   rows={3}
-                  className="w-full bg-input border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                  className="w-full bg-input/50 border border-border/30 rounded-2xl px-5 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 transition-all duration-200 resize-none"
                 />
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-muted-foreground block mb-2">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground block">
                   Fecha estimada de finalización
                 </label>
                 <Popover>
@@ -233,7 +230,7 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
                     <button
                       type="button"
                       className={cn(
-                        "w-full bg-input border border-border rounded-xl px-4 py-3 text-left flex items-center gap-3",
+                        "w-full bg-input/50 border border-border/30 rounded-2xl px-5 py-4 text-left flex items-center gap-3 hover:border-border/50 transition-all duration-200",
                         !targetDate && "text-muted-foreground"
                       )}
                     >
@@ -241,32 +238,32 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
                       {targetDate ? format(targetDate, "dd/MM/yyyy", { locale: es }) : "Seleccionar fecha"}
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-card border-border" align="start">
+                  <PopoverContent className="w-auto p-0 bg-card border-border/30 rounded-2xl shadow-soft-lg" align="start">
                     <CalendarComponent
                       mode="single"
                       selected={targetDate}
                       onSelect={setTargetDate}
                       initialFocus
-                      className={cn("p-3 pointer-events-auto")}
+                      className={cn("p-4 pointer-events-auto")}
                     />
                   </PopoverContent>
                 </Popover>
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-muted-foreground block mb-1">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground block">
                   ¿Con qué frecuencia querés trabajar en esta meta?
                 </label>
-                <p className="text-xs text-primary mb-3">
+                <p className="text-xs text-primary/70 mb-3">
                   Te vamos a mandar recordatorios motivacionales :D
                 </p>
                 <Select value={reminderFrequency} onValueChange={setReminderFrequency}>
-                  <SelectTrigger className="w-full bg-input border border-border rounded-xl px-4 py-3 h-auto text-foreground">
+                  <SelectTrigger className="w-full bg-input/50 border border-border/30 rounded-2xl px-5 py-4 h-auto text-foreground hover:border-border/50 transition-all duration-200">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-card border-border">
+                  <SelectContent className="bg-card border-border/30 rounded-2xl shadow-soft-lg">
                     {frequencyOptions.map((option) => (
-                      <SelectItem key={option} value={option}>
+                      <SelectItem key={option} value={option} className="rounded-xl">
                         {option}
                       </SelectItem>
                     ))}
@@ -274,19 +271,21 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
                 </Select>
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-muted-foreground block mb-2">
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-muted-foreground block">
                   Color de la tarjeta
                 </label>
                 <div className="flex gap-3 flex-wrap">
                   {colorOptions.map((option) => (
-                    <button
+                    <motion.button
                       key={option.value}
                       type="button"
                       onClick={() => setColor(option.value)}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
                       className={cn(
-                        "w-12 h-12 rounded-xl transition-all",
-                        color === option.value && "ring-2 ring-primary ring-offset-2 ring-offset-card"
+                        "w-12 h-12 rounded-2xl transition-all duration-200",
+                        color === option.value && "ring-2 ring-primary ring-offset-4 ring-offset-card shadow-glow-sm"
                       )}
                       style={{ backgroundColor: option.value }}
                       title={option.name}
@@ -295,13 +294,15 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
                 </div>
               </div>
 
-              <button
+              <motion.button
                 type="submit"
                 disabled={!name.trim() || !category.trim() || isSubmitting}
-                className="w-full bg-primary text-primary-foreground font-semibold py-4 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full bg-primary text-primary-foreground font-semibold py-4 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-glow-sm hover:shadow-glow text-base"
               >
                 {isSubmitting ? 'Creando...' : 'Listo, crear meta!'}
-              </button>
+              </motion.button>
             </form>
             </div>
           </motion.div>
