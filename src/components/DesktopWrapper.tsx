@@ -13,10 +13,10 @@ const DesktopWrapper = ({ children }: DesktopWrapperProps) => {
   // For auth page on desktop: no phone frame, just centered content
   if (isAuthPage) {
     return (
-      <div className="min-h-screen w-full bg-background lg:overflow-hidden">
-        <div className="min-h-screen w-full lg:flex lg:h-screen">
-          {/* Left column - Auth form area (pure black) */}
-          <div className="w-full min-h-screen lg:w-1/2 lg:h-screen lg:bg-black lg:flex lg:items-center lg:justify-center lg:p-6 lg:overflow-hidden">
+      <div className="min-h-screen w-full bg-[#0A0C16] lg:overflow-hidden">
+        <div className="min-h-screen w-full lg:flex lg:h-screen bg-[#0A0C16]">
+          {/* Left column - Auth form area */}
+          <div className="w-full min-h-screen bg-[#0A0C16] lg:w-1/2 lg:h-screen lg:flex lg:items-center lg:justify-center lg:p-6 lg:overflow-hidden">
             {children}
           </div>
 
