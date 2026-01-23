@@ -19,8 +19,8 @@ export const ProjectsCarousel: FC<ProjectsCarouselProps> = ({
   onCreateProject
 }) => {
   return (
-    <div className="overflow-x-auto scrollbar-hide pb-4">
-      <div className="flex gap-3 px-5 my-0 py-[9px]">
+    <div className="overflow-x-auto scrollbar-hide pb-4 scroll-smooth overscroll-x-contain touch-pan-x">
+      <div className="flex flex-nowrap gap-3 px-5 my-0 py-[9px]">
         {projects.map((project) => (
           <ProjectCard
             key={project.id}
