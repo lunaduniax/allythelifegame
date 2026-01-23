@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Calendar } from 'lucide-react';
+import { X, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -162,45 +162,18 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
             exit={{ opacity: 0, y: 100 }}
             className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-2xl border-t border-border max-h-[90vh] overflow-y-auto"
           >
-            {/* Sticky Step Header */}
+            {/* Sticky Header with Close Button */}
             <div className="sticky top-0 z-10 bg-card pt-6 px-6 pb-4 border-b border-border/50">
-              <div className="flex items-center justify-between gap-4">
-                {/* Left: Back button */}
-                <div className="w-16 flex items-center">
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
-                    aria-label="Volver"
-                  >
-                    <ChevronLeft size={20} />
-                    <span className="text-sm">Back</span>
-                  </button>
-                </div>
-
-                {/* Center: Step bars */}
-                <div className="flex items-center gap-1.5 flex-1 justify-center">
-                  {Array.from({ length: totalSteps }, (_, i) => {
-                    const stepNumber = i + 1;
-                    const isFilled = stepNumber <= currentStep;
-                    
-                    return (
-                      <div
-                        key={stepNumber}
-                        className={`h-1 flex-1 max-w-12 rounded-full transition-colors ${
-                          isFilled ? 'bg-foreground' : 'bg-muted-foreground/30'
-                        }`}
-                      />
-                    );
-                  })}
-                </div>
-
-                {/* Right: Step text */}
-                <div className="w-16 flex justify-end">
-                  <span className="text-sm text-muted-foreground">
-                    {currentStep} of {totalSteps}
-                  </span>
-                </div>
+              <div className="flex items-center justify-end">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  disabled={isSubmitting}
+                  className="w-10 h-10 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors disabled:opacity-50"
+                  aria-label="Cerrar"
+                >
+                  <X size={24} />
+                </button>
               </div>
             </div>
 
