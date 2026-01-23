@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import CreateGoal from "./pages/CreateGoal";
 import AddTasks from "./pages/AddTasks";
 import GoalCreated from "./pages/GoalCreated";
+import Account from "./pages/Account";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -75,6 +76,7 @@ const App = () => (
         <Routes>
           <Route path="/auth" element={<Auth />} />
           <Route path="/" element={<HomeRoute />} />
+          <Route path="/home" element={<HomeRoute />} />
           <Route
             path="/create-goal"
             element={
@@ -96,6 +98,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <GoalCreated />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/account"
+            element={
+              <ProtectedRoute>
+                <Account />
               </ProtectedRoute>
             }
           />

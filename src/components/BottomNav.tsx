@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ListTodo, Plus, Bell, Smile } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -9,12 +10,22 @@ interface BottomNavProps {
 }
 
 export const BottomNav: FC<BottomNavProps> = ({ activeTab, onTabChange, onCreateTask }) => {
+  const navigate = useNavigate();
+  
   const navItems = [
     { id: 'home' as const, icon: ListTodo, label: 'Home' },
     { id: 'create' as const, icon: Plus, label: 'Create', isAction: true },
     { id: 'notifications' as const, icon: Bell, label: 'Notifications' },
     { id: 'profile' as const, icon: Smile, label: 'Profile' },
   ];
+
+  const handleTabClick = (id: 'home' | 'create' | 'notifications' | 'profile') => {
+    if (id === 'profile') {
+      navigate('/account');
+    } else {
+      onTabChange(id);
+    }
+  };
 
   return (
     <nav className="fixed bottom-6 left-0 right-0 z-50 px-6 safe-area-pb">
@@ -38,7 +49,7 @@ export const BottomNav: FC<BottomNavProps> = ({ activeTab, onTabChange, onCreate
           return (
             <button
               key={item.id}
-              onClick={() => onTabChange(item.id)}
+              onClick={() => handleTabClick(item.id)}
               className="p-1 transition-all"
             >
               <div className={cn(
