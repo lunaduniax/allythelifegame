@@ -7,9 +7,15 @@ interface BottomNavProps {
   activeTab: 'home' | 'create' | 'notifications' | 'profile';
   onTabChange: (tab: 'home' | 'create' | 'notifications' | 'profile') => void;
   onCreateTask: () => void;
+  unreadNotifications?: number;
 }
 
-export const BottomNav: FC<BottomNavProps> = ({ activeTab, onTabChange, onCreateTask }) => {
+export const BottomNav: FC<BottomNavProps> = ({ 
+  activeTab, 
+  onTabChange, 
+  onCreateTask,
+  unreadNotifications = 0 
+}) => {
   const navigate = useNavigate();
   
   const navItems = [
@@ -22,6 +28,8 @@ export const BottomNav: FC<BottomNavProps> = ({ activeTab, onTabChange, onCreate
   const handleTabClick = (id: 'home' | 'create' | 'notifications' | 'profile') => {
     if (id === 'profile') {
       navigate('/account');
+    } else if (id === 'notifications') {
+      navigate('/notifications');
     } else {
       onTabChange(id);
     }
@@ -33,6 +41,7 @@ export const BottomNav: FC<BottomNavProps> = ({ activeTab, onTabChange, onCreate
         {navItems.map(item => {
           const isActive = activeTab === item.id;
           const Icon = item.icon;
+          const showBadge = item.id === 'notifications' && unreadNotifications > 0;
 
           if (item.isAction) {
             return (
@@ -50,7 +59,7 @@ export const BottomNav: FC<BottomNavProps> = ({ activeTab, onTabChange, onCreate
             <button
               key={item.id}
               onClick={() => handleTabClick(item.id)}
-              className="p-1 transition-all"
+              className="p-1 transition-all relative"
             >
               <div className={cn(
                 "w-12 h-12 rounded-xl flex items-center justify-center transition-all",
@@ -67,6 +76,14 @@ export const BottomNav: FC<BottomNavProps> = ({ activeTab, onTabChange, onCreate
                   strokeWidth={2}
                 />
               </div>
+              {/* Notification Badge */}
+              {showBadge && (
+                <div className="absolute top-0 right-0 min-w-[18px] h-[18px] rounded-full bg-primary flex items-center justify-center">
+                  <span className="text-[10px] font-bold text-primary-foreground px-1">
+                    {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                  </span>
+                </div>
+              )}
             </button>
           );
         })}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { ProjectsCarousel } from '@/components/ProjectsCarousel';
 import { TasksList } from '@/components/TasksList';
@@ -9,6 +9,10 @@ import { useUserProjects } from '@/hooks/useUserProjects';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
+interface AppShellContext {
+  createNotification: (title: string, message: string) => Promise<void>;
+}
+
 interface IndexProps {
   initialProjectId?: string | null;
 }
@@ -16,6 +20,7 @@ interface IndexProps {
 const Index = ({ initialProjectId }: IndexProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { createNotification } = useOutletContext<AppShellContext>();
   
   const {
     projects,
@@ -130,7 +135,16 @@ const Index = ({ initialProjectId }: IndexProps) => {
         projectName={mappedSelectedProject.name}
         projectColor={mappedSelectedProject.color}
         tasks={mappedTasks}
-        onCompleteTask={completeTask}
+        onCompleteTask={async (taskId) => {
+          const task = mappedTasks.find(t => t.id === taskId);
+          await completeTask(taskId);
+          if (task && createNotification) {
+            await createNotification(
+              'Tarea completada',
+              `Has completado "${task.title}". ¡Sigue así!`
+            );
+          }
+        }}
         onCreateTask={() => setIsTaskModalOpen(true)}
       />
 

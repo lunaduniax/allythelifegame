@@ -15,6 +15,7 @@ import Account from "./pages/Account";
 import Settings from "./pages/Settings";
 import Help from "./pages/Help";
 import About from "./pages/About";
+import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -117,6 +118,7 @@ const App = () => (
             <Route path="/settings" element={<Settings />} />
             <Route path="/help" element={<Help />} />
             <Route path="/about" element={<About />} />
+            <Route path="/notifications" element={<Notifications />} />
           </Route>
 
           {/* Catch-all */}
