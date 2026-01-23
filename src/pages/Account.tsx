@@ -4,6 +4,13 @@ import { ChevronLeft, ChevronRight, Camera } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { z } from 'zod';
+
+const profileSchema = z.object({
+  name: z.string().trim().min(1, 'El nombre es requerido').max(100, 'El nombre es muy largo'),
+  username: z.string().trim().max(30, 'El username es muy largo').regex(/^[a-z0-9_]*$/, 'Solo letras minúsculas, números y guiones bajos').optional().or(z.literal('')),
+  phone_number: z.string().trim().max(20, 'El número es muy largo').optional().or(z.literal('')),
+});
 
 interface ProfileData {
   name: string;
@@ -61,14 +68,26 @@ const Account = () => {
   const handleSave = async () => {
     if (!user) return;
 
+    // Validate input before saving
+    const validationResult = profileSchema.safeParse({
+      name: profile.name,
+      username: profile.username,
+      phone_number: profile.phone_number,
+    });
+
+    if (!validationResult.success) {
+      toast.error(validationResult.error.errors[0].message);
+      return;
+    }
+
     setSaving(true);
     try {
       const { error } = await supabase
         .from('profiles')
         .update({
-          name: profile.name,
-          username: profile.username,
-          phone_number: profile.phone_number,
+          name: validationResult.data.name,
+          username: validationResult.data.username || null,
+          phone_number: validationResult.data.phone_number || null,
         })
         .eq('user_id', user.id);
 
@@ -89,6 +108,10 @@ const Account = () => {
   };
 
   const handleInputChange = (field: keyof ProfileData, value: string) => {
+    // Sanitize username input on change
+    if (field === 'username') {
+      value = value.toLowerCase().replace(/[^a-z0-9_]/g, '');
+    }
     setProfile(prev => ({ ...prev, [field]: value }));
   };
 
