@@ -116,16 +116,18 @@ export const ProjectCard: FC<ProjectCardProps> = ({
           </div>
 
           <div
-            className="text-xs font-medium"
+            className="h-[10px] rounded-full mt-2 overflow-hidden"
             style={{
-              backgroundColor: isLight ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.2)',
+              backgroundColor: isLight ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.18)',
+              border: '1px solid rgba(0,0,0,0.12)',
             }}
           >
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
-                width: `${progress}%`,
-                backgroundColor: isLight ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.9)',
+                width: `${Math.max(progress, 0)}%`,
+                backgroundColor: isLight ? 'rgba(0,0,0,0.75)' : 'rgba(255,255,255,0.9)',
+                boxShadow: isLight ? 'none' : 'inset 0 0 0 1px rgba(0,0,0,0.3)',
               }}
             />
           </div>
