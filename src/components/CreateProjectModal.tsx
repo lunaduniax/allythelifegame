@@ -14,8 +14,15 @@ import {
 interface CreateProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { name: string; category: string; color: string; importance?: string; targetDate?: string }) => void;
+  onSubmit: (data: { name: string; category: string; color: string; importance?: string; targetDate?: string; reminderFrequency: string }) => void;
 }
+
+const frequencyOptions = [
+  'Todos los días',
+  '3 veces por semana',
+  'Una vez por semana',
+  'Prefiero no recibir recordatorios',
+];
 
 const colorOptions = [
   { name: 'Violet', value: '#DAD2FB' },
@@ -36,6 +43,7 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
   const [color, setColor] = useState(colorOptions[0].value);
   const [importance, setImportance] = useState('');
   const [targetDate, setTargetDate] = useState<Date | undefined>(undefined);
+  const [reminderFrequency, setReminderFrequency] = useState('3 veces por semana');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +55,7 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
       color,
       importance: importance.trim() || undefined,
       targetDate: targetDate ? format(targetDate, 'yyyy-MM-dd') : undefined,
+      reminderFrequency,
     });
 
     setName('');
@@ -54,6 +63,7 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
     setColor(colorOptions[0].value);
     setImportance('');
     setTargetDate(undefined);
+    setReminderFrequency('3 veces por semana');
     onClose();
   };
 
@@ -154,6 +164,32 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
                     />
                   </PopoverContent>
                 </Popover>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-muted-foreground block mb-1">
+                  ¿Con qué frecuencia querés trabajar en esta meta?
+                </label>
+                <p className="text-xs text-primary mb-3">
+                  Te vamos a mandar recordatorios motivacionales :D
+                </p>
+                <div className="flex flex-col gap-2">
+                  {frequencyOptions.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setReminderFrequency(option)}
+                      className={cn(
+                        "w-full px-4 py-3 rounded-xl border text-left transition-colors text-sm",
+                        reminderFrequency === option
+                          ? "border-primary bg-primary/10 text-foreground"
+                          : "border-border bg-input text-foreground hover:bg-input/80"
+                      )}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div>
