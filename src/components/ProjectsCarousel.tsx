@@ -9,6 +9,7 @@ interface ProjectsCarouselProps {
   onSelectProject: (id: string) => void;
   getProgress: (project: Project) => number;
   onCreateProject: () => void;
+  onDeleteProject?: (projectId: string) => void;
 }
 
 export const ProjectsCarousel: FC<ProjectsCarouselProps> = ({
@@ -16,7 +17,8 @@ export const ProjectsCarousel: FC<ProjectsCarouselProps> = ({
   selectedProjectId,
   onSelectProject,
   getProgress,
-  onCreateProject
+  onCreateProject,
+  onDeleteProject
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -87,6 +89,7 @@ export const ProjectsCarousel: FC<ProjectsCarouselProps> = ({
               progress={getProgress(project)}
               isSelected={project.id === selectedProjectId}
               onSelect={() => onSelectProject(project.id)}
+              onDelete={onDeleteProject}
             />
           ))}
 
