@@ -19,7 +19,7 @@ export const ProjectsCarousel: FC<ProjectsCarouselProps> = ({
   onCreateProject
 }) => {
   return (
-    <div className="overflow-x-auto scrollbar-hide pb-4 scroll-smooth overscroll-x-contain touch-pan-x">
+    <div className="overflow-x-auto scrollbar-hide pb-4 scroll-smooth overscroll-x-contain touch-pan-x snap-x snap-mandatory">
       <div className="flex flex-nowrap gap-3 px-5 my-0 py-[9px]">
         {projects.map((project) => (
           <ProjectCard
@@ -34,7 +34,7 @@ export const ProjectsCarousel: FC<ProjectsCarouselProps> = ({
         {/* Create New Goal Card */}
         <button
           onClick={onCreateProject}
-          className="flex-shrink-0 w-44 p-4 rounded-xl cursor-pointer transition-all duration-200 border border-border bg-card/50 hover:bg-card hover:border-muted-foreground/30 flex flex-col items-center justify-center gap-2"
+          className="flex-shrink-0 w-44 p-4 rounded-xl cursor-pointer transition-all duration-200 border border-border bg-card/50 hover:bg-card hover:border-muted-foreground/30 flex flex-col items-center justify-center gap-2 snap-start"
         >
           <Plus size={28} className="text-muted-foreground" />
           <span className="font-semibold leading-tight text-xl text-muted-foreground">

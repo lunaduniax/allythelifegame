@@ -27,7 +27,7 @@ export const ProjectCard: FC<ProjectCardProps> = ({
   const isLight = isLightColor(project.color);
   const textColor = isLight ? 'text-gray-900' : 'text-white';
   const textMutedColor = isLight ? 'text-gray-700' : 'text-white/70';
-  return <div onClick={onSelect} className={cn("flex-shrink-0 w-44 p-4 rounded-xl cursor-pointer transition-all duration-200 border-0", isSelected && "ring-2 ring-offset-2 ring-offset-background")} style={{
+  return <div onClick={onSelect} className={cn("flex-shrink-0 w-44 p-4 rounded-xl cursor-pointer transition-all duration-200 border-0 snap-start", isSelected && "ring-2 ring-offset-2 ring-offset-background")} style={{
     backgroundColor: project.color,
     ['--tw-ring-color' as string]: project.color
   }}>
