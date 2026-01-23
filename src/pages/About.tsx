@@ -5,7 +5,7 @@ const About = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="bg-background text-foreground">
       {/* Top Bar */}
       <header className="flex items-center justify-between px-6 py-4 pt-12">
         <button

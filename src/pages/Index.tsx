@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { ProjectsCarousel } from '@/components/ProjectsCarousel';
 import { TasksList } from '@/components/TasksList';
-import { BottomNav } from '@/components/BottomNav';
 import { CreateTaskModal } from '@/components/CreateTaskModal';
 import { CreateProjectModal } from '@/components/CreateProjectModal';
 import { useUserProjects } from '@/hooks/useUserProjects';
@@ -32,7 +31,6 @@ const Index = ({ initialProjectId }: IndexProps) => {
     loading,
   } = useUserProjects(initialProjectId);
 
-  const [activeTab, setActiveTab] = useState<'home' | 'create' | 'notifications' | 'profile'>('home');
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
@@ -53,7 +51,6 @@ const Index = ({ initialProjectId }: IndexProps) => {
     });
     
     if (newProject) {
-      // Navigate to Add Tasks step with the new project
       navigate('/add-tasks', { 
         state: { 
           selectedProjectId: newProject.id,
@@ -69,7 +66,6 @@ const Index = ({ initialProjectId }: IndexProps) => {
     if (success) {
       toast.success('Meta eliminada');
       
-      // If no projects remain, redirect to onboarding
       if (remainingProjects.length === 0) {
         navigate('/create-goal', { replace: true });
       }
@@ -78,13 +74,12 @@ const Index = ({ initialProjectId }: IndexProps) => {
     }
   };
 
-  // Map DbProject to component-compatible format
   const mappedProjects = projects.map(p => ({
     id: p.id,
     name: p.name,
     category: p.category,
     color: p.color,
-    tasks: [], // Tasks are fetched separately
+    tasks: [],
   }));
 
   const mappedSelectedProject = selectedProject ? {
@@ -105,20 +100,18 @@ const Index = ({ initialProjectId }: IndexProps) => {
     status: t.status,
   }));
 
-  // Get user's display name from profile or email
   const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'Usuario';
 
-  // Show loading state
   if (loading || !mappedSelectedProject) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="animate-pulse text-muted-foreground">Cargando...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="bg-background text-foreground">
       <Header 
         userName={userName} 
         projectCount={projects.length}
@@ -139,12 +132,6 @@ const Index = ({ initialProjectId }: IndexProps) => {
         tasks={mappedTasks}
         onCompleteTask={completeTask}
         onCreateTask={() => setIsTaskModalOpen(true)}
-      />
-
-      <BottomNav
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        onCreateTask={() => setIsProjectModalOpen(true)}
       />
 
       <CreateTaskModal
