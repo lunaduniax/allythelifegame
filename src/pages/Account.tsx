@@ -193,7 +193,7 @@ const Account = () => {
         {/* Action Rows */}
         <div className="pt-4 space-y-3">
           <button
-            onClick={() => {/* TODO: Navigate to settings */}}
+            onClick={() => navigate('/settings')}
             className="w-full flex items-center justify-between bg-transparent border border-border rounded-xl px-4 py-3.5 text-foreground"
           >
             <span>Configuración</span>

@@ -11,6 +11,9 @@ import CreateGoal from "./pages/CreateGoal";
 import AddTasks from "./pages/AddTasks";
 import GoalCreated from "./pages/GoalCreated";
 import Account from "./pages/Account";
+import Settings from "./pages/Settings";
+import Help from "./pages/Help";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -106,6 +109,30 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Account />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/help"
+            element={
+              <ProtectedRoute>
+                <Help />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/about"
+            element={
+              <ProtectedRoute>
+                <About />
               </ProtectedRoute>
             }
           />
