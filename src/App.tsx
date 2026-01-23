@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation, useSearchParams } 
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProjects } from "@/hooks/useUserProjects";
 import { AppShell } from "@/components/AppShell";
+import DesktopWrapper from "@/components/DesktopWrapper";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Account from "./pages/Account";
@@ -68,30 +69,32 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/auth" element={<Auth />} />
+        <DesktopWrapper>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/auth" element={<Auth />} />
 
-          {/* Main app routes with persistent bottom nav */}
-          <Route
-            element={
-              <ProtectedRoute>
-                <AppShell />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="/" element={<HomeContent />} />
-            <Route path="/home" element={<HomeContent />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/help" element={<Help />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/notifications" element={<Notifications />} />
-          </Route>
+            {/* Main app routes with persistent bottom nav */}
+            <Route
+              element={
+                <ProtectedRoute>
+                  <AppShell />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/" element={<HomeContent />} />
+              <Route path="/home" element={<HomeContent />} />
+              <Route path="/account" element={<Account />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/help" element={<Help />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/notifications" element={<Notifications />} />
+            </Route>
 
-          {/* Catch-all */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+            {/* Catch-all */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </DesktopWrapper>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
