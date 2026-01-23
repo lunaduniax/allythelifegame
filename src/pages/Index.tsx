@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 interface AppShellContext {
   createNotification: (title: string, message: string) => Promise<void>;
   openCreateFlow: () => void;
+  openAllyGPT: (projectContext: { id: string; name: string; category: string } | null) => void;
 }
 
 interface IndexProps {
@@ -23,6 +24,7 @@ const Index = ({ initialProjectId }: IndexProps) => {
   const context = useOutletContext<AppShellContext>();
   const createNotification = context?.createNotification;
   const openCreateFlow = context?.openCreateFlow;
+  const openAllyGPT = context?.openAllyGPT;
   
   const {
     projects,
@@ -127,7 +129,21 @@ const Index = ({ initialProjectId }: IndexProps) => {
         onDeleteProject={handleDeleteProject}
       />
 
-      <AllyGPTBanner onStartAllyGPT={openCreateFlow || (() => {})} />
+      <AllyGPTBanner
+        onStartAllyGPT={() => {
+          if (openAllyGPT) {
+            openAllyGPT(
+              mappedSelectedProject
+                ? {
+                    id: mappedSelectedProject.id,
+                    name: mappedSelectedProject.name,
+                    category: mappedSelectedProject.category,
+                  }
+                : null
+            );
+          }
+        }}
+      />
 
       {mappedSelectedProject && (
         <TasksList
