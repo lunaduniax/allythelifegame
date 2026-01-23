@@ -3,6 +3,7 @@ import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { BottomNav } from '@/components/BottomNav';
 import { CreateGoalFlow } from '@/components/CreateGoalFlow';
 import { AllyGPTChat } from '@/components/AllyGPTChat';
+import ProfileOnboardingModal from '@/components/ProfileOnboardingModal';
 import { useUserProjects } from '@/hooks/useUserProjects';
 import { useNotifications } from '@/hooks/useNotifications';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,6 +16,7 @@ export const AppShell = () => {
   const { user } = useAuth();
   const [isCreateFlowOpen, setIsCreateFlowOpen] = useState(false);
   const [isAllyGPTOpen, setIsAllyGPTOpen] = useState(false);
+  const [profileOnboardingComplete, setProfileOnboardingComplete] = useState(false);
   const [selectedProjectContext, setSelectedProjectContext] = useState<{
     id: string;
     name: string;
@@ -195,6 +197,11 @@ export const AppShell = () => {
         projectContext={selectedProjectContext}
         onCreateGoal={handleCreateGoalFromAllyGPT}
         onAddTasks={handleAddTasksFromAllyGPT}
+      />
+
+      <ProfileOnboardingModal
+        user={user}
+        onComplete={() => setProfileOnboardingComplete(true)}
       />
     </div>
   );
