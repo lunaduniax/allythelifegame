@@ -334,7 +334,17 @@ const Auth = () => {
                 type="button"
                 variant="outline"
                 className="flex-1 h-12 rounded-lg bg-card border-border text-foreground hover:bg-card-elevated hover:text-foreground"
-                onClick={() => toast.info('Google login próximamente')}
+                onClick={async () => {
+                  const { error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                      redirectTo: `${window.location.origin}/`,
+                    },
+                  });
+                  if (error) {
+                    toast.error('Error al iniciar sesión con Google');
+                  }
+                }}
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                   <path
