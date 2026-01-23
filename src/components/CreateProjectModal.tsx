@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar } from 'lucide-react';
+import { ChevronLeft, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -22,6 +22,8 @@ interface CreateProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: { name: string; category: string; color: string; importance?: string; targetDate?: string; reminderFrequency: string }) => void;
+  currentStep?: 1 | 2;
+  totalSteps?: number;
 }
 
 const frequencyOptions = [
@@ -44,6 +46,8 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
+  currentStep = 1,
+  totalSteps = 2,
 }) => {
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
@@ -89,22 +93,58 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 100 }}
-            className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-2xl border-t border-border p-6 pb-8 max-h-[90vh] overflow-y-auto"
+            className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-2xl border-t border-border max-h-[90vh] overflow-y-auto"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div>
+            {/* Sticky Step Header */}
+            <div className="sticky top-0 z-10 bg-card pt-6 px-6 pb-4 border-b border-border/50">
+              <div className="flex items-center justify-between gap-4">
+                {/* Left: Back button */}
+                <div className="w-16 flex items-center">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label="Volver"
+                  >
+                    <ChevronLeft size={20} />
+                    <span className="text-sm">Back</span>
+                  </button>
+                </div>
+
+                {/* Center: Step bars */}
+                <div className="flex items-center gap-1.5 flex-1 justify-center">
+                  {Array.from({ length: totalSteps }, (_, i) => {
+                    const stepNumber = i + 1;
+                    const isFilled = stepNumber <= currentStep;
+                    
+                    return (
+                      <div
+                        key={stepNumber}
+                        className={`h-1 flex-1 max-w-12 rounded-full transition-colors ${
+                          isFilled ? 'bg-foreground' : 'bg-muted-foreground/30'
+                        }`}
+                      />
+                    );
+                  })}
+                </div>
+
+                {/* Right: Step text */}
+                <div className="w-16 flex justify-end">
+                  <span className="text-sm text-muted-foreground">
+                    {currentStep} of {totalSteps}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 pb-8">
+              <div className="mb-4">
                 <h2 className="text-xl font-semibold">¿Qué querés lograr?</h2>
                 <p className="text-sm text-primary mt-1">
                   Conectá con tu propósito, esto te va a ayudar cuando flaquee la motivación.
                 </p>
               </div>
-              <button
-                onClick={onClose}
-                className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0"
-              >
-                <X size={18} />
-              </button>
-            </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -223,6 +263,7 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
                 Listo, siguiente!
               </button>
             </form>
+            </div>
           </motion.div>
         </>
       )}
