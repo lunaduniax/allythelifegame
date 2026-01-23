@@ -106,4 +106,25 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Desktop wrapper styles */
+  .bg-desktop-gradient {
+    background: 
+      radial-gradient(ellipse 80% 50% at 50% -20%, hsl(68 100% 50% / 0.08), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 100%, hsl(225 40% 20% / 0.3), transparent),
+      radial-gradient(ellipse 50% 50% at 20% 80%, hsl(280 30% 15% / 0.2), transparent),
+      linear-gradient(180deg, hsl(230 38% 4%) 0%, hsl(230 38% 8%) 100%);
+  }
+
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+
+  .shadow-phone {
+    box-shadow: 
+      0 0 0 1px hsl(225 10% 20% / 0.5),
+      0 25px 50px -12px hsl(0 0% 0% / 0.5),
+      0 12px 24px -8px hsl(0 0% 0% / 0.3),
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.05);
+  }
 }
