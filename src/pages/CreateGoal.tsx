@@ -34,6 +34,17 @@ const frequencyOptions = [
   'Prefiero no recibir recordatorios',
 ];
 
+const colorOptions = [
+  '#D4FE00', // Lime (primary)
+  '#FF6B6B', // Red
+  '#4ECDC4', // Teal
+  '#45B7D1', // Blue
+  '#96CEB4', // Green
+  '#FFEAA7', // Yellow
+  '#DDA0DD', // Plum
+  '#FF8C42', // Orange
+];
+
 const goalSchema = z.object({
   name: z.string().min(1, 'La meta es requerida').max(200, 'La meta es muy larga'),
   category: z.string().min(1, 'La categoría es requerida'),
@@ -67,6 +78,7 @@ const CreateGoal = () => {
   const [reminderFrequency, setReminderFrequency] = useState(
     restoredState?.reminderFrequency || '3 veces por semana'
   );
+  const [color, setColor] = useState(restoredState?.color || '#D4FE00');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,6 +120,7 @@ const CreateGoal = () => {
                 importance,
                 targetDate: targetDate?.toISOString(),
                 reminderFrequency,
+                color,
               },
             },
           });
@@ -122,7 +135,7 @@ const CreateGoal = () => {
         importance: validatedData.importance || null,
         target_date: targetDate ? format(targetDate, 'yyyy-MM-dd') : null,
         reminder_frequency: reminderFrequency,
-        color: '#D4FE00',
+        color: color,
       }).select().single();
 
       if (error) {
@@ -141,6 +154,7 @@ const CreateGoal = () => {
             importance,
             targetDate: targetDate?.toISOString(),
             reminderFrequency,
+            color,
           }
         }
       });
@@ -263,6 +277,29 @@ const CreateGoal = () => {
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-sm text-muted-foreground">
+            Color de la meta
+          </Label>
+          <div className="flex gap-3 flex-wrap">
+            {colorOptions.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setColor(c)}
+                className={cn(
+                  "w-10 h-10 rounded-full transition-all",
+                  color === c 
+                    ? "ring-2 ring-offset-2 ring-offset-background ring-foreground scale-110" 
+                    : "hover:scale-105"
+                )}
+                style={{ backgroundColor: c }}
+                aria-label={`Seleccionar color ${c}`}
+              />
+            ))}
+          </div>
         </div>
 
         <div className="mt-auto pt-6">
