@@ -54,53 +54,9 @@ export const AppShell = () => {
     }
   };
 
-  const handleCreateComplete = async (
-    projectData: {
-      name: string;
-      category: string;
-      color: string;
-      importance?: string;
-      targetDate?: string;
-      reminderFrequency: string;
-    },
-    tasks: string[]
-  ) => {
-    const newProject = await addProject({
-      name: projectData.name,
-      category: projectData.category,
-      color: projectData.color,
-      importance: projectData.importance,
-      targetDate: projectData.targetDate,
-      reminderFrequency: projectData.reminderFrequency,
-    });
-
-    if (newProject && user) {
-      if (tasks.length > 0) {
-        const taskInserts = tasks.map(title => ({
-          user_id: user.id,
-          project_id: newProject.id,
-          title,
-          status: 'in_progress',
-        }));
-        await supabase.from('tasks').insert(taskInserts);
-      }
-
-      await createNotification(
-        'Nueva meta creada',
-        `Has creado la meta "${projectData.name}". ¡Vamos a lograrla!`
-      );
-
-      if (projectData.reminderFrequency && projectData.reminderFrequency !== 'Prefiero no recibir recordatorios') {
-        await createNotification(
-          'Recordatorios activados',
-          `Recibirás recordatorios ${projectData.reminderFrequency.toLowerCase()} para tu meta "${projectData.name}".`
-        );
-      }
-
-      await refetch();
-      setIsCreateFlowOpen(false);
-      navigate('/', { state: { selectedProjectId: newProject.id } });
-    }
+  const handleCreateSuccess = async () => {
+    await refetch();
+    setIsCreateFlowOpen(false);
   };
 
   // AllyGPT handlers
@@ -211,7 +167,7 @@ export const AppShell = () => {
           <CreateGoalFlow
             isOpen={isCreateFlowOpen}
             onClose={() => setIsCreateFlowOpen(false)}
-            onComplete={handleCreateComplete}
+            onSuccess={handleCreateSuccess}
           />
 
           <AllyGPTChat
