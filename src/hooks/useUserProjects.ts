@@ -10,6 +10,7 @@ export interface DbProject {
   color: string;
   importance: string | null;
   target_date: string | null;
+  reminder_frequency: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -268,7 +269,7 @@ export function useUserProjects(initialSelectedId?: string | null) {
   );
 
   const addProject = useCallback(
-    async (projectData: { name: string; category: string; color: string }) => {
+    async (projectData: { name: string; category: string; color: string; importance?: string; targetDate?: string; reminderFrequency?: string }) => {
       if (!user) return;
 
       const { data, error } = await supabase
@@ -278,6 +279,9 @@ export function useUserProjects(initialSelectedId?: string | null) {
           name: projectData.name,
           category: projectData.category,
           color: projectData.color,
+          importance: projectData.importance || null,
+          target_date: projectData.targetDate || null,
+          reminder_frequency: projectData.reminderFrequency || '3 veces por semana',
         })
         .select()
         .single();

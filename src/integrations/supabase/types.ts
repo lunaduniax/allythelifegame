@@ -52,6 +52,7 @@ export type Database = {
           id: string
           importance: string | null
           name: string
+          reminder_frequency: string | null
           target_date: string | null
           updated_at: string
           user_id: string
@@ -63,6 +64,7 @@ export type Database = {
           id?: string
           importance?: string | null
           name: string
+          reminder_frequency?: string | null
           target_date?: string | null
           updated_at?: string
           user_id: string
@@ -74,6 +76,7 @@ export type Database = {
           id?: string
           importance?: string | null
           name?: string
+          reminder_frequency?: string | null
           target_date?: string | null
           updated_at?: string
           user_id?: string
