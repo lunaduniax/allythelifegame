@@ -4,11 +4,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { Eye, EyeOff } from 'lucide-react';
 import PasswordRequirements, { validatePassword } from '@/components/PasswordRequirements';
-
+import ForgotPasswordModal from '@/components/ForgotPasswordModal';
 const signupSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido').max(100, 'El nombre es muy largo'),
   email: z.string().email('Correo electrónico inválido').max(255, 'El correo es muy largo'),
@@ -26,7 +27,7 @@ const loginSchema = z.object({
   password: z.string().min(1, 'La contraseña es requerida'),
 });
 
-type AuthMode = 'signup' | 'login' | 'forgot' | 'reset';
+type AuthMode = 'signup' | 'login' | 'reset';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -38,9 +39,9 @@ const Auth = () => {
   const [newPassword, setNewPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-
+  const [rememberMe, setRememberMe] = useState(false);
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const isLogin = mode === 'login';
-  const isForgot = mode === 'forgot';
   const isReset = mode === 'reset';
 
   useEffect(() => {
@@ -94,24 +95,6 @@ const Auth = () => {
 
         toast.success('¡Contraseña actualizada exitosamente!');
         navigate('/');
-        return;
-      }
-
-      if (isForgot) {
-        // Send password reset email
-        const validatedEmail = z.string().email('Correo electrónico inválido').parse(email);
-        
-        const { error } = await supabase.auth.resetPasswordForEmail(validatedEmail, {
-          redirectTo: `${window.location.origin}/auth`,
-        });
-
-        if (error) {
-          toast.error(error.message);
-          return;
-        }
-
-        toast.success('Te enviamos un correo para restablecer tu contraseña');
-        setMode('login');
         return;
       }
 
@@ -173,11 +156,9 @@ const Auth = () => {
 
   const getTitle = () => {
     if (isReset) return 'Nueva contraseña';
-    if (isForgot) return 'Recuperar contraseña';
     if (isLogin) return 'Bienvenido de vuelta';
     return 'Empezá tu camino';
   };
-
   return (
     <div className="min-h-screen bg-background flex flex-col px-5 pt-12 pb-8 safe-area-inset">
       {/* Header */}
@@ -185,11 +166,6 @@ const Auth = () => {
         <h1 className="text-4xl font-bold leading-tight text-foreground">
           {getTitle()} ✨
         </h1>
-        {isForgot && (
-          <p className="text-muted-foreground mt-2">
-            Ingresá tu correo y te enviaremos un enlace para restablecer tu contraseña.
-          </p>
-        )}
         {isReset && (
           <p className="text-muted-foreground mt-2">
             Ingresá tu nueva contraseña.
@@ -267,20 +243,9 @@ const Auth = () => {
         {/* Password field - shown for login and signup only */}
         {(isLogin || mode === 'signup') && (
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password" className="text-sm text-muted-foreground">
-                Contraseña
-              </Label>
-              {isLogin && (
-                <button
-                  type="button"
-                  onClick={() => setMode('forgot')}
-                  className="text-xs text-primary hover:underline"
-                >
-                  ¿Olvidaste tu contraseña?
-                </button>
-              )}
-            </div>
+            <Label htmlFor="password" className="text-sm text-muted-foreground">
+              Contraseña
+            </Label>
             <div className="relative">
               <Input
                 id="password"
@@ -301,6 +266,32 @@ const Auth = () => {
               </button>
             </div>
             {mode === 'signup' && <PasswordRequirements password={password} />}
+            {isLogin && (
+              <button
+                type="button"
+                onClick={() => setForgotPasswordOpen(true)}
+                className="text-xs text-primary hover:underline"
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Remember me checkbox - login only */}
+        {isLogin && (
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="rememberMe"
+              checked={rememberMe}
+              onCheckedChange={(checked) => setRememberMe(checked === true)}
+            />
+            <Label
+              htmlFor="rememberMe"
+              className="text-sm text-muted-foreground cursor-pointer"
+            >
+              Recordarme
+            </Label>
           </div>
         )}
 
@@ -313,8 +304,6 @@ const Auth = () => {
             ? 'Cargando...'
             : isReset
             ? 'Guardar contraseña'
-            : isForgot
-            ? 'Enviar enlace'
             : isLogin
             ? 'Iniciar sesión'
             : 'Empezar ahora'}
@@ -323,15 +312,7 @@ const Auth = () => {
 
         {/* Toggle Auth Mode */}
         <div className="mt-auto pt-8 text-center">
-          {isForgot ? (
-            <button
-              type="button"
-              onClick={() => setMode('login')}
-              className="text-primary font-semibold text-sm"
-            >
-              ← Volver a iniciar sesión
-            </button>
-          ) : isReset ? (
+          {isReset ? (
             <span className="text-muted-foreground text-sm">
               Ingresá tu nueva contraseña
             </span>
@@ -351,6 +332,11 @@ const Auth = () => {
           )}
         </div>
       </form>
+
+      <ForgotPasswordModal
+        open={forgotPasswordOpen}
+        onOpenChange={setForgotPasswordOpen}
+      />
     </div>
   );
 };
