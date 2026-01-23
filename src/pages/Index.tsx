@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Header } from '@/components/Header';
 import { ProjectsCarousel } from '@/components/ProjectsCarousel';
 import { TasksList } from '@/components/TasksList';
@@ -64,6 +63,7 @@ const Index = ({ initialProjectId }: IndexProps) => {
     
     if (success) {
       toast.success('Meta eliminada');
+      // AppShell will auto-open the create modal when 0 projects remain
     } else {
       toast.error('Error al eliminar la meta');
     }
@@ -102,50 +102,32 @@ const Index = ({ initialProjectId }: IndexProps) => {
   // Show loading state
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-muted-foreground text-lg font-light animate-pulse-soft"
-        >
-          Cargando...
-        </motion.div>
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-pulse text-muted-foreground">Cargando...</div>
       </div>
     );
   }
 
-  // Empty state
+  // Empty state - AppShell will auto-open the create modal
   if (projects.length === 0) {
     return (
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="bg-background text-foreground"
-      >
+      <div className="bg-background text-foreground">
         <Header userName={userName} projectCount={0} />
-        <div className="flex flex-col items-center justify-center py-24 px-8 text-center">
-          <p className="text-muted-foreground mb-6 text-lg font-light">No tenés metas todavía</p>
-          <motion.button
+        <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
+          <p className="text-muted-foreground mb-4">No tenés metas todavía</p>
+          <button
             onClick={openCreateFlow}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="bg-primary text-primary-foreground font-semibold py-4 px-8 rounded-2xl shadow-glow-sm hover:shadow-glow transition-all duration-200"
+            className="bg-primary text-primary-foreground font-semibold py-3 px-6 rounded-xl"
           >
             Crear mi primera meta
-          </motion.button>
+          </button>
         </div>
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-      className="bg-background text-foreground min-h-screen"
-    >
+    <div className="bg-background text-foreground">
       <Header 
         userName={userName} 
         projectCount={projects.length}
@@ -213,7 +195,7 @@ const Index = ({ initialProjectId }: IndexProps) => {
           project={mappedSelectedProject}
         />
       )}
-    </motion.div>
+    </div>
   );
 };
 

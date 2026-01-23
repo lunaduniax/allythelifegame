@@ -2,7 +2,6 @@ import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ListTodo, Plus, Bell, Smile } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
 
 interface BottomNavProps {
   activeTab: 'home' | 'create' | 'notifications' | 'profile';
@@ -37,13 +36,8 @@ export const BottomNav: FC<BottomNavProps> = ({
   };
 
   return (
-    <nav className="fixed bottom-8 left-0 right-0 z-50 px-8 safe-area-pb">
-      <motion.div 
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="flex items-center justify-around py-4 px-4 max-w-xs mx-auto bg-card/90 backdrop-blur-xl rounded-[32px] border border-border/30 shadow-soft-lg"
-      >
+    <nav className="fixed bottom-6 left-0 right-0 z-50 px-6 safe-area-pb">
+      <div className="flex items-center justify-around py-3 px-3 max-w-sm mx-auto bg-card rounded-[28px] border border-border/50 shadow-xl">
         {navItems.map(item => {
           const isActive = activeTab === item.id;
           const Icon = item.icon;
@@ -51,57 +45,49 @@ export const BottomNav: FC<BottomNavProps> = ({
 
           if (item.isAction) {
             return (
-              <motion.button
+              <button
                 key={item.id}
                 onClick={onCreateTask}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-12 h-12 rounded-2xl border border-muted-foreground/30 flex items-center justify-center transition-all duration-200 hover:border-primary/50 hover:bg-primary/5"
+                className="w-12 h-12 rounded-xl border-2 border-muted-foreground/40 flex items-center justify-center transition-all hover:border-foreground/60"
               >
-                <Icon size={20} className="text-muted-foreground" strokeWidth={1.5} />
-              </motion.button>
+                <Icon size={20} className="text-muted-foreground" strokeWidth={2} />
+              </button>
             );
           }
 
           return (
-            <motion.button
+            <button
               key={item.id}
               onClick={() => handleTabClick(item.id)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
               className="p-1 transition-all relative"
             >
               <div className={cn(
-                "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-200",
+                "w-12 h-12 rounded-xl flex items-center justify-center transition-all",
                 isActive 
-                  ? "bg-primary/15" 
-                  : "hover:bg-secondary/50"
+                  ? "bg-primary/20" 
+                  : "hover:bg-secondary"
               )}>
                 <Icon 
                   size={22} 
                   className={cn(
-                    "transition-colors duration-200",
+                    "transition-colors",
                     isActive ? "text-foreground" : "text-muted-foreground"
                   )}
-                  strokeWidth={1.5}
+                  strokeWidth={2}
                 />
               </div>
               {/* Notification Badge */}
               {showBadge && (
-                <motion.div 
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute top-0 right-0 min-w-[18px] h-[18px] rounded-full bg-primary flex items-center justify-center"
-                >
+                <div className="absolute top-0 right-0 min-w-[18px] h-[18px] rounded-full bg-primary flex items-center justify-center">
                   <span className="text-[10px] font-bold text-primary-foreground px-1">
                     {unreadNotifications > 9 ? '9+' : unreadNotifications}
                   </span>
-                </motion.div>
+                </div>
               )}
-            </motion.button>
+            </button>
           );
         })}
-      </motion.div>
+      </div>
     </nav>
   );
 };

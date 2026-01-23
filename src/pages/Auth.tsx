@@ -8,10 +8,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { Eye, EyeOff } from 'lucide-react';
-import { motion } from 'framer-motion';
 import PasswordRequirements, { validatePassword } from '@/components/PasswordRequirements';
 import ForgotPasswordModal from '@/components/ForgotPasswordModal';
-
 const signupSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido').max(100, 'El nombre es muy largo'),
   email: z.string().email('Correo electrónico inválido').max(255, 'El correo es muy largo'),
@@ -61,6 +59,7 @@ const Auth = () => {
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
+        // Check if we're in a password recovery flow
         const hash = window.location.hash;
         if (hash.includes('type=recovery')) {
           setMode('reset');
@@ -79,6 +78,7 @@ const Auth = () => {
 
     try {
       if (isReset) {
+        // Password reset flow
         if (!validatePassword(newPassword)) {
           toast.error('La contraseña no cumple los requisitos');
           return;
@@ -159,32 +159,26 @@ const Auth = () => {
     if (isLogin) return 'Bienvenido de vuelta';
     return 'Empezá tu camino';
   };
-
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="min-h-screen bg-background flex flex-col px-6 pt-16 pb-8 safe-area-inset lg:min-h-0 lg:h-auto lg:max-w-[440px] lg:mx-auto lg:justify-center lg:py-10"
-    >
+    <div className="min-h-screen bg-background flex flex-col px-5 pt-10 pb-6 safe-area-inset lg:min-h-0 lg:h-auto lg:max-w-[440px] lg:mx-auto lg:justify-center lg:py-8">
       {/* Header */}
-      <div className="mb-10 lg:mb-8">
-        <h1 className="text-4xl lg:text-3xl font-semibold leading-tight text-foreground tracking-tight">
-          {getTitle()} <span className="inline-block animate-pulse-soft">✨</span>
+      <div className="mb-6 lg:mb-5">
+        <h1 className="text-3xl lg:text-2xl font-bold leading-tight text-foreground">
+          {getTitle()} ✨
         </h1>
         {isReset && (
-          <p className="text-muted-foreground mt-3 text-base leading-relaxed">
+          <p className="text-muted-foreground mt-1 text-sm">
             Ingresá tu nueva contraseña.
           </p>
         )}
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5 flex-1 lg:flex-initial">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 flex-1 lg:flex-initial">
         {/* Reset password form */}
         {isReset && (
-          <div className="space-y-2">
-            <Label htmlFor="newPassword" className="text-sm text-muted-foreground font-medium">
+          <div className="space-y-1.5">
+            <Label htmlFor="newPassword" className="text-sm text-muted-foreground">
               Nueva contraseña
             </Label>
             <div className="relative">
@@ -195,12 +189,12 @@ const Auth = () => {
                 autoComplete="new-password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="h-14 bg-input/50 border-border/30 rounded-2xl text-foreground pr-14 px-5 focus:ring-2 focus:ring-primary/50 focus:border-primary/30 transition-all duration-200"
+                className="h-12 bg-card border-border rounded-lg text-foreground pr-12"
               />
               <button
                 type="button"
                 onClick={() => setShowNewPassword(!showNewPassword)}
-                className="absolute right-5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 aria-label={showNewPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
               >
                 {showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -212,8 +206,8 @@ const Auth = () => {
 
         {/* Signup name field */}
         {mode === 'signup' && (
-          <div className="space-y-2">
-            <Label htmlFor="name" className="text-sm text-muted-foreground font-medium">
+          <div className="space-y-1.5">
+            <Label htmlFor="name" className="text-sm text-muted-foreground">
               Nombre
             </Label>
             <Input
@@ -223,15 +217,15 @@ const Auth = () => {
               autoComplete="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="h-14 bg-input/50 border-border/30 rounded-2xl text-foreground px-5 focus:ring-2 focus:ring-primary/50 focus:border-primary/30 transition-all duration-200"
+              className="h-12 bg-card border-border rounded-lg text-foreground"
             />
           </div>
         )}
 
-        {/* Email field */}
+        {/* Email field - shown for login, signup, forgot */}
         {!isReset && (
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm text-muted-foreground font-medium">
+          <div className="space-y-1.5">
+            <Label htmlFor="email" className="text-sm text-muted-foreground">
               Correo electrónico
             </Label>
             <Input
@@ -241,15 +235,15 @@ const Auth = () => {
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-14 bg-input/50 border-border/30 rounded-2xl text-foreground px-5 focus:ring-2 focus:ring-primary/50 focus:border-primary/30 transition-all duration-200"
+              className="h-12 bg-card border-border rounded-lg text-foreground"
             />
           </div>
         )}
 
-        {/* Password field */}
+        {/* Password field - shown for login and signup only */}
         {(isLogin || mode === 'signup') && (
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm text-muted-foreground font-medium">
+          <div className="space-y-1.5">
+            <Label htmlFor="password" className="text-sm text-muted-foreground">
               Contraseña
             </Label>
             <div className="relative">
@@ -260,12 +254,12 @@ const Auth = () => {
                 autoComplete={isLogin ? 'current-password' : 'new-password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-14 bg-input/50 border-border/30 rounded-2xl text-foreground pr-14 px-5 focus:ring-2 focus:ring-primary/50 focus:border-primary/30 transition-all duration-200"
+                className="h-12 bg-card border-border rounded-lg text-foreground pr-12"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -276,7 +270,7 @@ const Auth = () => {
               <button
                 type="button"
                 onClick={() => setForgotPasswordOpen(true)}
-                className="text-sm text-primary/80 hover:text-primary transition-colors mt-1"
+                className="text-xs text-primary hover:underline"
               >
                 ¿Olvidaste tu contraseña?
               </button>
@@ -284,14 +278,13 @@ const Auth = () => {
           </div>
         )}
 
-        {/* Remember me checkbox */}
+        {/* Remember me checkbox - login only */}
         {isLogin && (
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2">
             <Checkbox
               id="rememberMe"
               checked={rememberMe}
               onCheckedChange={(checked) => setRememberMe(checked === true)}
-              className="rounded-md"
             />
             <Label
               htmlFor="rememberMe"
@@ -302,27 +295,23 @@ const Auth = () => {
           </div>
         )}
 
-        <motion.div
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.98 }}
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="h-12 rounded-lg bg-primary text-primary-foreground font-semibold text-base hover:bg-primary/90 mt-2"
         >
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-semibold text-base hover:bg-primary/90 mt-4 shadow-glow-sm hover:shadow-glow transition-all duration-200"
-          >
-            {isLoading
-              ? 'Cargando...'
-              : isReset
-              ? 'Guardar contraseña'
-              : isLogin
-              ? 'Iniciar sesión'
-              : 'Empezar ahora'}
-          </Button>
-        </motion.div>
+          {isLoading
+            ? 'Cargando...'
+            : isReset
+            ? 'Guardar contraseña'
+            : isLogin
+            ? 'Iniciar sesión'
+            : 'Empezar ahora'}
+        </Button>
+
 
         {/* Toggle Auth Mode */}
-        <div className="mt-auto pt-6 lg:pt-4 text-center lg:mt-0">
+        <div className="mt-auto pt-4 lg:pt-3 text-center lg:mt-0">
           {isReset ? (
             <span className="text-muted-foreground text-sm">
               Ingresá tu nueva contraseña
@@ -335,7 +324,7 @@ const Auth = () => {
               <button
                 type="button"
                 onClick={() => setMode(isLogin ? 'signup' : 'login')}
-                className="text-primary font-semibold text-sm hover:text-primary/80 transition-colors"
+                className="text-primary font-semibold text-sm"
               >
                 {isLogin ? 'Registrate' : 'Iniciá sesión'}
               </button>
@@ -348,7 +337,7 @@ const Auth = () => {
         open={forgotPasswordOpen}
         onOpenChange={setForgotPasswordOpen}
       />
-    </motion.div>
+    </div>
   );
 };
 

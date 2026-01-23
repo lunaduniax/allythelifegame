@@ -26,50 +26,47 @@ export const AllyGPTBanner: FC<AllyGPTBannerProps> = ({ onStartAllyGPT }) => {
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0, y: 15 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -15 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="px-6 py-5"
+        exit={{ opacity: 0, y: -10 }}
+        className="px-5 py-4"
       >
         <div
           onClick={onStartAllyGPT}
-          className="relative bg-card/60 backdrop-blur-sm border border-border/30 rounded-2xl p-6 cursor-pointer hover:border-primary/30 hover:bg-card/80 transition-all duration-300 shadow-soft group"
+          className="relative bg-card border border-border rounded-2xl p-5 cursor-pointer hover:border-primary/50 transition-colors"
         >
           {/* Dismiss button */}
           <button
             onClick={handleDismiss}
-            className="absolute top-4 right-4 p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all duration-200"
+            className="absolute top-3 right-3 p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
             aria-label="Cerrar"
           >
             <X size={16} />
           </button>
 
           {/* Content */}
-          <div className="flex items-start gap-5">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/15 transition-colors duration-200">
-              <Sparkles size={22} className="text-primary" />
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <Sparkles size={20} className="text-primary" />
             </div>
 
-            <div className="flex-1 min-w-0 pr-8">
-              <h3 className="text-lg font-semibold text-foreground mb-2">
+            <div className="flex-1 min-w-0 pr-6">
+              <h3 className="text-base font-semibold text-foreground mb-1">
                 ¿Querés ayuda para ordenar tus metas?
               </h3>
-              <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+              <p className="text-sm text-muted-foreground mb-4">
                 AllyGPT te ayuda a convertir tus ideas en tareas simples.
               </p>
 
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onStartAllyGPT();
                 }}
-                className="bg-primary text-primary-foreground font-semibold text-sm py-3 px-6 rounded-xl hover:bg-primary/90 transition-all duration-200 shadow-glow-sm"
+                className="bg-primary text-primary-foreground font-semibold text-sm py-2.5 px-5 rounded-xl hover:bg-primary/90 transition-colors"
               >
                 Empezar con AllyGPT
-              </motion.button>
+              </button>
             </div>
           </div>
         </div>

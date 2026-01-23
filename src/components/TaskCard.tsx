@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 interface TaskCardProps {
   task: Task;
-  projectColor: string;
+  projectColor: string; // Hex color string
   onComplete: () => void;
 }
 
@@ -48,17 +48,17 @@ export const TaskCard: FC<TaskCardProps> = ({ task, projectColor, onComplete }) 
       <motion.div
         initial={{ opacity: 1, height: 'auto' }}
         animate={{ opacity: 0, height: 0, marginBottom: 0 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.3 }}
         className="overflow-hidden"
       />
     );
   }
 
   return (
-    <div className="relative mb-4">
+    <div className="relative mb-3">
       {/* Success background indicator */}
       <motion.div 
-        className="absolute inset-0 rounded-2xl bg-success flex items-center pl-6"
+        className="absolute inset-0 rounded-xl bg-success flex items-center pl-6"
         style={{ opacity: checkOpacity }}
       >
         <motion.div style={{ scale: checkScale }}>
@@ -75,57 +75,54 @@ export const TaskCard: FC<TaskCardProps> = ({ task, projectColor, onComplete }) 
         style={{ x, opacity }}
         onClick={handleTap}
         className={cn(
-          "bg-card/80 backdrop-blur-sm rounded-2xl p-5 cursor-pointer relative z-10",
-          "border border-border/30 shadow-soft transition-all duration-300",
-          "hover:border-border/50 hover:shadow-soft-lg"
+          "bg-card rounded-xl p-4 cursor-pointer relative z-10",
+          "border-l-4"
         )}
         whileTap={{ scale: 0.98 }}
       >
-        {/* Color accent bar */}
         <div 
-          className="absolute left-0 top-4 bottom-4 w-1 rounded-full"
+          className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl"
           style={{ backgroundColor: projectColor }}
         />
         
-        <div className="pl-3">
-          <span 
-            className="text-xs font-medium block mb-2 px-3 py-1.5 rounded-lg w-fit tracking-wide"
-            style={{ 
-              backgroundColor: hexToRgba(projectColor, 0.12),
-              color: projectColor,
-            }}
-          >
-            {task.category}
-          </span>
-          
-          <h4 className="text-base font-medium text-foreground leading-snug mb-2">
-            {task.title}
-          </h4>
-          
-          <span className="text-sm text-muted-foreground">
-            {task.date}
-          </span>
+        <span 
+          className="text-xs font-medium block mb-1.5 px-2 py-0.5 rounded-md w-fit"
+          style={{ 
+            backgroundColor: hexToRgba(projectColor, 0.15),
+            color: projectColor,
+          }}
+        >
+          {task.category}
+        </span>
+        
+        <h4 className="text-base font-medium text-foreground leading-snug mb-1">
+          {task.title}
+        </h4>
+        
+        <span className="text-xs text-muted-foreground">
+          {task.date}
+        </span>
 
-          {/* Expanded description */}
-          <motion.div
-            initial={false}
-            animate={{ 
-              height: isExpanded ? 'auto' : 0,
-              opacity: isExpanded ? 1 : 0,
-              marginTop: isExpanded ? 16 : 0
-            }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="overflow-hidden"
+        {/* Expanded description */}
+        <motion.div
+          initial={false}
+          animate={{ 
+            height: isExpanded ? 'auto' : 0,
+            opacity: isExpanded ? 1 : 0,
+            marginTop: isExpanded ? 12 : 0
+          }}
+          transition={{ duration: 0.2 }}
+          className="overflow-hidden"
+        >
+          <div 
+            className="pt-3 border-t"
+            style={{ borderColor: hexToRgba(projectColor, 0.2) }}
           >
-            <div 
-              className="pt-4 border-t border-border/30"
-            >
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {task.description}
-              </p>
-            </div>
-          </motion.div>
-        </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {task.description}
+            </p>
+          </div>
+        </motion.div>
       </motion.div>
     </div>
   );
