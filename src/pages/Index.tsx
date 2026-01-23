@@ -43,13 +43,13 @@ const Index = ({ initialProjectId }: IndexProps) => {
 
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
-  const handleCreateTask = (data: { title: string; category: string; date: string; description: string }) => {
+  const handleCreateTask = async (data: { title: string; category: string; date: string; description: string }) => {
     if (isDemoMode) {
       toast.info('Modo demo', { description: 'Inicia sesión para crear tareas' });
-      return;
+      throw new Error('Demo mode');
     }
     if (selectedProjectId) {
-      addTask(selectedProjectId, data);
+      await addTask(selectedProjectId, data);
     }
   };
 
