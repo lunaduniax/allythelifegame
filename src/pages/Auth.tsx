@@ -160,24 +160,24 @@ const Auth = () => {
     return 'Empezá tu camino';
   };
   return (
-    <div className="min-h-screen bg-background flex flex-col px-5 pt-12 pb-8 safe-area-inset">
+    <div className="min-h-screen bg-background flex flex-col px-5 pt-10 pb-6 safe-area-inset lg:min-h-0 lg:h-auto lg:max-w-[440px] lg:mx-auto lg:justify-center lg:py-8">
       {/* Header */}
-      <div className="mb-10">
-        <h1 className="text-4xl font-bold leading-tight text-foreground">
+      <div className="mb-6 lg:mb-5">
+        <h1 className="text-3xl lg:text-2xl font-bold leading-tight text-foreground">
           {getTitle()} ✨
         </h1>
         {isReset && (
-          <p className="text-muted-foreground mt-2">
+          <p className="text-muted-foreground mt-1 text-sm">
             Ingresá tu nueva contraseña.
           </p>
         )}
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5 flex-1">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 flex-1 lg:flex-initial">
         {/* Reset password form */}
         {isReset && (
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="newPassword" className="text-sm text-muted-foreground">
               Nueva contraseña
             </Label>
@@ -189,7 +189,7 @@ const Auth = () => {
                 autoComplete="new-password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="h-14 bg-card border-border rounded-lg text-foreground pr-12"
+                className="h-12 bg-card border-border rounded-lg text-foreground pr-12"
               />
               <button
                 type="button"
@@ -206,7 +206,7 @@ const Auth = () => {
 
         {/* Signup name field */}
         {mode === 'signup' && (
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="name" className="text-sm text-muted-foreground">
               Nombre
             </Label>
@@ -217,14 +217,14 @@ const Auth = () => {
               autoComplete="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="h-14 bg-card border-border rounded-lg text-foreground"
+              className="h-12 bg-card border-border rounded-lg text-foreground"
             />
           </div>
         )}
 
         {/* Email field - shown for login, signup, forgot */}
         {!isReset && (
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="email" className="text-sm text-muted-foreground">
               Correo electrónico
             </Label>
@@ -235,14 +235,14 @@ const Auth = () => {
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-14 bg-card border-border rounded-lg text-foreground"
+              className="h-12 bg-card border-border rounded-lg text-foreground"
             />
           </div>
         )}
 
         {/* Password field - shown for login and signup only */}
         {(isLogin || mode === 'signup') && (
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="password" className="text-sm text-muted-foreground">
               Contraseña
             </Label>
@@ -254,7 +254,7 @@ const Auth = () => {
                 autoComplete={isLogin ? 'current-password' : 'new-password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-14 bg-card border-border rounded-lg text-foreground pr-12"
+                className="h-12 bg-card border-border rounded-lg text-foreground pr-12"
               />
               <button
                 type="button"
@@ -298,7 +298,7 @@ const Auth = () => {
         <Button
           type="submit"
           disabled={isLoading}
-          className="h-14 rounded-lg bg-primary text-primary-foreground font-semibold text-base hover:bg-primary/90 mt-4"
+          className="h-12 rounded-lg bg-primary text-primary-foreground font-semibold text-base hover:bg-primary/90 mt-2"
         >
           {isLoading
             ? 'Cargando...'
@@ -311,7 +311,7 @@ const Auth = () => {
 
 
         {/* Toggle Auth Mode */}
-        <div className="mt-auto pt-8 text-center">
+        <div className="mt-auto pt-4 lg:pt-3 text-center lg:mt-0">
           {isReset ? (
             <span className="text-muted-foreground text-sm">
               Ingresá tu nueva contraseña
