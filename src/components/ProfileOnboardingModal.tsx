@@ -6,6 +6,13 @@ import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { User } from '@supabase/supabase-js';
+import { z } from 'zod';
+
+const profileSchema = z.object({
+  name: z.string().trim().min(1, 'El nombre es requerido').max(100, 'El nombre es muy largo'),
+  username: z.string().trim().max(30, 'El username es muy largo').regex(/^[a-z0-9_]*$/, 'Solo letras minúsculas, números y guiones bajos').optional().or(z.literal('')),
+  phone_number: z.string().trim().max(20, 'El número es muy largo').optional().or(z.literal('')),
+});
 
 interface ProfileOnboardingModalProps {
   user: User | null;
@@ -50,13 +57,20 @@ const ProfileOnboardingModal = ({ user, onComplete }: ProfileOnboardingModalProp
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!name.trim()) {
-      toast.error('El nombre es requerido');
-      return;
-    }
 
     if (!user) return;
+
+    // Validate input before saving
+    const validationResult = profileSchema.safeParse({
+      name: name,
+      username: username,
+      phone_number: phoneNumber,
+    });
+
+    if (!validationResult.success) {
+      toast.error(validationResult.error.errors[0].message);
+      return;
+    }
 
     setIsLoading(true);
 
@@ -64,9 +78,9 @@ const ProfileOnboardingModal = ({ user, onComplete }: ProfileOnboardingModalProp
       const { error } = await supabase
         .from('profiles')
         .update({
-          name: name.trim(),
-          username: username.trim() || null,
-          phone_number: phoneNumber.trim() || null,
+          name: validationResult.data.name,
+          username: validationResult.data.username || null,
+          phone_number: validationResult.data.phone_number || null,
         })
         .eq('user_id', user.id);
 
