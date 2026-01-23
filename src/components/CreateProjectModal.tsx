@@ -10,6 +10,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface CreateProjectModalProps {
   isOpen: boolean;
@@ -173,23 +180,18 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
                 <p className="text-xs text-primary mb-3">
                   Te vamos a mandar recordatorios motivacionales :D
                 </p>
-                <div className="flex flex-col gap-2">
-                  {frequencyOptions.map((option) => (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => setReminderFrequency(option)}
-                      className={cn(
-                        "w-full px-4 py-3 rounded-xl border text-left transition-colors text-sm",
-                        reminderFrequency === option
-                          ? "border-primary bg-primary/10 text-foreground"
-                          : "border-border bg-input text-foreground hover:bg-input/80"
-                      )}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
+                <Select value={reminderFrequency} onValueChange={setReminderFrequency}>
+                  <SelectTrigger className="w-full bg-input border border-border rounded-xl px-4 py-3 h-auto text-foreground">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card border-border">
+                    {frequencyOptions.map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
