@@ -64,13 +64,11 @@ const DesktopWrapper = ({ children }: DesktopWrapperProps) => {
     );
   }
 
-  // For other pages: use phone frame wrapper
+  // For other pages: full-bleed layout with responsive max-width
   return (
-    <div className="min-h-screen w-full bg-background lg:bg-black">
-      <div className="min-h-screen w-full lg:flex lg:items-center lg:justify-center lg:p-8">
-        <div className="w-full min-h-screen bg-background lg:min-h-0 lg:max-w-[430px] lg:max-h-[85vh] lg:rounded-[2rem] lg:shadow-2xl lg:border lg:border-white/10 lg:overflow-hidden">
-          {children}
-        </div>
+    <div className="min-h-screen w-full bg-background">
+      <div className="min-h-screen w-full max-w-[480px] mx-auto lg:max-w-[480px]">
+        {children}
       </div>
     </div>
   );
