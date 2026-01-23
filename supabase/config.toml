@@ -1,1 +1,7 @@
 project_id = "ltixnzdniyybifvwzllt"
+
+[functions.allygpt-chat]
+verify_jwt = false
+
+[functions.delete-account]
+verify_jwt = false
