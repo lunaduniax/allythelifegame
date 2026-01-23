@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
+import authSidePhoto from '@/assets/auth-side-photo.png';
 
 interface DesktopWrapperProps {
   children: ReactNode;
@@ -14,7 +15,7 @@ const DesktopWrapper = ({ children }: DesktopWrapperProps) => {
       {/* Desktop split layout */}
       <div className="min-h-screen w-full lg:flex">
         {/* Left branding panel - desktop only */}
-        <div className="hidden lg:flex lg:w-[45%] lg:min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f0f1a] relative overflow-hidden">
+        <div className="hidden lg:flex lg:w-[40%] lg:min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f0f1a] relative overflow-hidden">
           {/* Decorative elements */}
           <div className="absolute inset-0 bg-noise opacity-[0.03]" />
           <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
@@ -48,15 +49,27 @@ const DesktopWrapper = ({ children }: DesktopWrapperProps) => {
           </div>
         </div>
 
-        {/* Right content panel */}
-        <div className="w-full lg:w-[55%] lg:min-h-screen lg:flex lg:items-center lg:justify-center lg:p-8">
+        {/* Right content panel - pure black on desktop */}
+        <div className="w-full lg:w-[60%] lg:min-h-screen lg:bg-black lg:flex lg:items-center lg:justify-center lg:gap-8 lg:px-8 lg:py-12">
+          {/* Form card */}
           <div className={`
             w-full min-h-screen bg-background
-            lg:min-h-0 lg:max-w-[430px] lg:rounded-[2rem] lg:shadow-2xl lg:border lg:border-border/50
+            lg:min-h-0 lg:max-w-[430px] lg:flex-shrink-0 lg:rounded-[2rem] lg:shadow-2xl lg:border lg:border-white/10
             ${isAuthPage ? 'lg:max-h-[700px] lg:overflow-auto' : 'lg:max-h-[85vh] lg:overflow-hidden'}
           `}>
             {children}
           </div>
+
+          {/* Side photo - desktop only, auth page only */}
+          {isAuthPage && (
+            <div className="hidden lg:block lg:w-[380px] lg:flex-shrink-0 lg:h-[600px]">
+              <img
+                src={authSidePhoto}
+                alt="Person working on their goals"
+                className="w-full h-full object-cover rounded-[2rem] shadow-2xl"
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
