@@ -1,16 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { BottomNav } from '@/components/BottomNav';
-import { CreateProjectModal } from '@/components/CreateProjectModal';
+import { CreateGoalFlow } from '@/components/CreateGoalFlow';
 import { useUserProjects } from '@/hooks/useUserProjects';
 import { useNotifications } from '@/hooks/useNotifications';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 export const AppShell = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  const { addProject } = useUserProjects();
+  const { user } = useAuth();
+  const [isCreateFlowOpen, setIsCreateFlowOpen] = useState(false);
+  const { projects, addProject, refetch, hasFetched } = useUserProjects();
   const { unreadCount, createNotification } = useNotifications();
+
+  // Auto-open modal when user has 0 goals
+  useEffect(() => {
+    if (hasFetched && projects.length === 0 && !isCreateFlowOpen) {
+      setIsCreateFlowOpen(true);
+    }
+  }, [hasFetched, projects.length]);
 
   // Determine active tab based on current route
   const getActiveTab = (): 'home' | 'create' | 'notifications' | 'profile' => {
@@ -31,44 +41,59 @@ export const AppShell = () => {
     }
   };
 
-  const handleCreateProject = async (data: { 
-    name: string; 
-    category: string; 
-    color: string; 
-    importance?: string; 
-    targetDate?: string; 
-    reminderFrequency: string 
-  }) => {
+  const handleCreateComplete = async (
+    projectData: {
+      name: string;
+      category: string;
+      color: string;
+      importance?: string;
+      targetDate?: string;
+      reminderFrequency: string;
+    },
+    tasks: string[]
+  ) => {
+    // Create the project
     const newProject = await addProject({
-      name: data.name,
-      category: data.category,
-      color: data.color,
-      importance: data.importance,
-      targetDate: data.targetDate,
-      reminderFrequency: data.reminderFrequency,
+      name: projectData.name,
+      category: projectData.category,
+      color: projectData.color,
+      importance: projectData.importance,
+      targetDate: projectData.targetDate,
+      reminderFrequency: projectData.reminderFrequency,
     });
-    
-    if (newProject) {
-      // Create notification for new goal
+
+    if (newProject && user) {
+      // Create tasks for this project
+      if (tasks.length > 0) {
+        const taskInserts = tasks.map(title => ({
+          user_id: user.id,
+          project_id: newProject.id,
+          title,
+          status: 'in_progress',
+        }));
+
+        await supabase.from('tasks').insert(taskInserts);
+      }
+
+      // Create notifications
       await createNotification(
         'Nueva meta creada',
-        `Has creado la meta "${data.name}". ¡Vamos a lograrla!`
+        `Has creado la meta "${projectData.name}". ¡Vamos a lograrla!`
       );
 
-      // Create notification for reminder frequency
-      if (data.reminderFrequency && data.reminderFrequency !== 'Prefiero no recibir recordatorios') {
+      if (projectData.reminderFrequency && projectData.reminderFrequency !== 'Prefiero no recibir recordatorios') {
         await createNotification(
           'Recordatorios activados',
-          `Recibirás recordatorios ${data.reminderFrequency.toLowerCase()} para tu meta "${data.name}".`
+          `Recibirás recordatorios ${projectData.reminderFrequency.toLowerCase()} para tu meta "${projectData.name}".`
         );
       }
 
-      navigate('/add-tasks', { 
-        state: { 
-          selectedProjectId: newProject.id,
-          projectName: newProject.name 
-        } 
-      });
+      // Refresh projects and close modal
+      await refetch();
+      setIsCreateFlowOpen(false);
+
+      // Navigate to home with new project selected
+      navigate('/', { state: { selectedProjectId: newProject.id } });
     }
   };
 
@@ -76,22 +101,22 @@ export const AppShell = () => {
     <div className="min-h-screen bg-background">
       {/* Main content with bottom padding for nav */}
       <div className="pb-24">
-        <Outlet context={{ createNotification }} />
+        <Outlet context={{ createNotification, openCreateFlow: () => setIsCreateFlowOpen(true) }} />
       </div>
 
       {/* Persistent Bottom Nav */}
       <BottomNav
         activeTab={getActiveTab()}
         onTabChange={handleTabChange}
-        onCreateTask={() => setIsProjectModalOpen(true)}
+        onCreateTask={() => setIsCreateFlowOpen(true)}
         unreadNotifications={unreadCount}
       />
 
-      {/* Create Project Modal */}
-      <CreateProjectModal
-        isOpen={isProjectModalOpen}
-        onClose={() => setIsProjectModalOpen(false)}
-        onSubmit={handleCreateProject}
+      {/* Create Goal Flow Modal */}
+      <CreateGoalFlow
+        isOpen={isCreateFlowOpen}
+        onClose={() => setIsCreateFlowOpen(false)}
+        onComplete={handleCreateComplete}
       />
     </div>
   );

@@ -8,9 +8,6 @@ import { useUserProjects } from "@/hooks/useUserProjects";
 import { AppShell } from "@/components/AppShell";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
-import CreateGoal from "./pages/CreateGoal";
-import AddTasks from "./pages/AddTasks";
-import GoalCreated from "./pages/GoalCreated";
 import Account from "./pages/Account";
 import Settings from "./pages/Settings";
 import Help from "./pages/Help";
@@ -47,11 +44,11 @@ const HomeContent = () => {
   const projectIdFromState = location.state?.selectedProjectId;
   const initialProjectId = projectIdFromUrl || projectIdFromState || null;
   
-  const { projects, hasFetched } = useUserProjects(initialProjectId);
+  const { hasFetched } = useUserProjects(initialProjectId);
 
   if (authLoading || !hasFetched) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="animate-pulse text-muted-foreground">Cargando...</div>
       </div>
     );
@@ -61,10 +58,7 @@ const HomeContent = () => {
     return <Navigate to="/auth" replace />;
   }
 
-  if (projects.length === 0) {
-    return <Navigate to="/create-goal" replace />;
-  }
-
+  // Always render Index - AppShell handles the 0-goals modal
   return <Index initialProjectId={initialProjectId} />;
 };
 
@@ -77,32 +71,6 @@ const App = () => (
         <Routes>
           {/* Public routes */}
           <Route path="/auth" element={<Auth />} />
-          
-          {/* Onboarding routes (no bottom nav) */}
-          <Route
-            path="/create-goal"
-            element={
-              <ProtectedRoute>
-                <CreateGoal />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/add-tasks"
-            element={
-              <ProtectedRoute>
-                <AddTasks />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/goal-created"
-            element={
-              <ProtectedRoute>
-                <GoalCreated />
-              </ProtectedRoute>
-            }
-          />
 
           {/* Main app routes with persistent bottom nav */}
           <Route

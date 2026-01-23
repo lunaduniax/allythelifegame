@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { ProjectsCarousel } from '@/components/ProjectsCarousel';
 import { TasksList } from '@/components/TasksList';
 import { CreateTaskModal } from '@/components/CreateTaskModal';
-import { CreateProjectModal } from '@/components/CreateProjectModal';
 import { useUserProjects } from '@/hooks/useUserProjects';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
 interface AppShellContext {
   createNotification: (title: string, message: string) => Promise<void>;
+  openCreateFlow: () => void;
 }
 
 interface IndexProps {
@@ -19,8 +19,9 @@ interface IndexProps {
 
 const Index = ({ initialProjectId }: IndexProps) => {
   const { user } = useAuth();
-  const navigate = useNavigate();
-  const { createNotification } = useOutletContext<AppShellContext>();
+  const context = useOutletContext<AppShellContext>();
+  const createNotification = context?.createNotification;
+  const openCreateFlow = context?.openCreateFlow;
   
   const {
     projects,
@@ -30,38 +31,16 @@ const Index = ({ initialProjectId }: IndexProps) => {
     getProjectProgress,
     completeTask,
     addTask,
-    addProject,
     deleteProject,
     inProgressTasks,
     loading,
   } = useUserProjects(initialProjectId);
 
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
   const handleCreateTask = (data: { title: string; category: string; date: string; description: string }) => {
     if (selectedProjectId) {
       addTask(selectedProjectId, data);
-    }
-  };
-
-  const handleCreateProject = async (data: { name: string; category: string; color: string; importance?: string; targetDate?: string; reminderFrequency: string }) => {
-    const newProject = await addProject({
-      name: data.name,
-      category: data.category,
-      color: data.color,
-      importance: data.importance,
-      targetDate: data.targetDate,
-      reminderFrequency: data.reminderFrequency,
-    });
-    
-    if (newProject) {
-      navigate('/add-tasks', { 
-        state: { 
-          selectedProjectId: newProject.id,
-          projectName: newProject.name 
-        } 
-      });
     }
   };
 
@@ -70,10 +49,7 @@ const Index = ({ initialProjectId }: IndexProps) => {
     
     if (success) {
       toast.success('Meta eliminada');
-      
-      if (remainingProjects.length === 0) {
-        navigate('/create-goal', { replace: true });
-      }
+      // AppShell will auto-open the create modal when 0 projects remain
     } else {
       toast.error('Error al eliminar la meta');
     }
@@ -107,10 +83,29 @@ const Index = ({ initialProjectId }: IndexProps) => {
 
   const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'Usuario';
 
-  if (loading || !mappedSelectedProject) {
+  // Show loading state
+  if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="animate-pulse text-muted-foreground">Cargando...</div>
+      </div>
+    );
+  }
+
+  // Empty state - AppShell will auto-open the create modal
+  if (projects.length === 0) {
+    return (
+      <div className="bg-background text-foreground">
+        <Header userName={userName} projectCount={0} />
+        <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
+          <p className="text-muted-foreground mb-4">No tenés metas todavía</p>
+          <button
+            onClick={openCreateFlow}
+            className="bg-primary text-primary-foreground font-semibold py-3 px-6 rounded-xl"
+          >
+            Crear mi primera meta
+          </button>
+        </div>
       </div>
     );
   }
@@ -127,39 +122,37 @@ const Index = ({ initialProjectId }: IndexProps) => {
         selectedProjectId={selectedProjectId || ''}
         onSelectProject={setSelectedProjectId}
         getProgress={(project) => getProjectProgress(project.id)}
-        onCreateProject={() => setIsProjectModalOpen(true)}
+        onCreateProject={openCreateFlow || (() => {})}
         onDeleteProject={handleDeleteProject}
       />
 
-      <TasksList
-        projectName={mappedSelectedProject.name}
-        projectColor={mappedSelectedProject.color}
-        tasks={mappedTasks}
-        onCompleteTask={async (taskId) => {
-          const task = mappedTasks.find(t => t.id === taskId);
-          await completeTask(taskId);
-          if (task && createNotification) {
-            await createNotification(
-              'Tarea completada',
-              `Has completado "${task.title}". ¡Sigue así!`
-            );
-          }
-        }}
-        onCreateTask={() => setIsTaskModalOpen(true)}
-      />
+      {mappedSelectedProject && (
+        <TasksList
+          projectName={mappedSelectedProject.name}
+          projectColor={mappedSelectedProject.color}
+          tasks={mappedTasks}
+          onCompleteTask={async (taskId) => {
+            const task = mappedTasks.find(t => t.id === taskId);
+            await completeTask(taskId);
+            if (task && createNotification) {
+              await createNotification(
+                'Tarea completada',
+                `Has completado "${task.title}". ¡Sigue así!`
+              );
+            }
+          }}
+          onCreateTask={() => setIsTaskModalOpen(true)}
+        />
+      )}
 
-      <CreateTaskModal
-        isOpen={isTaskModalOpen}
-        onClose={() => setIsTaskModalOpen(false)}
-        onSubmit={handleCreateTask}
-        project={mappedSelectedProject}
-      />
-
-      <CreateProjectModal
-        isOpen={isProjectModalOpen}
-        onClose={() => setIsProjectModalOpen(false)}
-        onSubmit={handleCreateProject}
-      />
+      {mappedSelectedProject && (
+        <CreateTaskModal
+          isOpen={isTaskModalOpen}
+          onClose={() => setIsTaskModalOpen(false)}
+          onSubmit={handleCreateTask}
+          project={mappedSelectedProject}
+        />
+      )}
     </div>
   );
 };
