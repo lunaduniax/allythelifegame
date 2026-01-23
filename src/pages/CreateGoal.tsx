@@ -71,6 +71,39 @@ const CreateGoal = () => {
     try {
       const validatedData = goalSchema.parse({ name, category, importance });
 
+      // Prevent duplicates: if a project with the same name already exists for this user,
+      // continue onboarding using the existing project instead of creating a new one.
+      const normalizedName = validatedData.name.trim();
+      if (normalizedName) {
+        const { data: existingProjects, error: existingError } = await supabase
+          .from('projects')
+          .select('id, name, created_at')
+          .eq('user_id', user.id)
+          .ilike('name', normalizedName)
+          .order('created_at', { ascending: true })
+          .limit(1);
+
+        if (existingError) {
+          console.error(existingError);
+        }
+
+        const existing = existingProjects?.[0];
+        if (existing?.id) {
+          navigate('/add-tasks', {
+            state: {
+              projectId: existing.id,
+              goalData: {
+                name,
+                category,
+                importance,
+                targetDate: targetDate?.toISOString(),
+              },
+            },
+          });
+          return;
+        }
+      }
+
       const { data, error } = await supabase.from('projects').insert({
         user_id: user.id,
         name: validatedData.name,
