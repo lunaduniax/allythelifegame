@@ -269,8 +269,8 @@ export function useUserProjects(initialSelectedId?: string | null) {
   );
 
   const addProject = useCallback(
-    async (projectData: { name: string; category: string; color: string; importance?: string; targetDate?: string; reminderFrequency?: string }) => {
-      if (!user) return;
+    async (projectData: { name: string; category: string; color: string; importance?: string; targetDate?: string; reminderFrequency?: string }): Promise<DbProject | null> => {
+      if (!user) return null;
 
       const { data, error } = await supabase
         .from('projects')
@@ -289,7 +289,9 @@ export function useUserProjects(initialSelectedId?: string | null) {
       if (!error && data) {
         setProjects((prev) => [data, ...prev]); // Add to beginning (most recent)
         setSelectedProjectId(data.id); // Auto-select the new project
+        return data as DbProject;
       }
+      return null;
     },
     [user]
   );

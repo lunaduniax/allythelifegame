@@ -42,8 +42,25 @@ const Index = ({ initialProjectId }: IndexProps) => {
     }
   };
 
-  const handleCreateProject = (data: { name: string; category: string; color: string }) => {
-    addProject(data);
+  const handleCreateProject = async (data: { name: string; category: string; color: string; importance?: string; targetDate?: string; reminderFrequency: string }) => {
+    const newProject = await addProject({
+      name: data.name,
+      category: data.category,
+      color: data.color,
+      importance: data.importance,
+      targetDate: data.targetDate,
+      reminderFrequency: data.reminderFrequency,
+    });
+    
+    if (newProject) {
+      // Navigate to Add Tasks step with the new project
+      navigate('/add-tasks', { 
+        state: { 
+          selectedProjectId: newProject.id,
+          projectName: newProject.name 
+        } 
+      });
+    }
   };
 
   const handleDeleteProject = async (projectId: string) => {
@@ -127,7 +144,7 @@ const Index = ({ initialProjectId }: IndexProps) => {
       <BottomNav
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        onCreateTask={() => setIsTaskModalOpen(true)}
+        onCreateTask={() => setIsProjectModalOpen(true)}
       />
 
       <CreateTaskModal
