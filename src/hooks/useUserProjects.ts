@@ -37,6 +37,9 @@ export function useUserProjects(initialSelectedId?: string | null) {
   
   // Store the initial ID in a ref to persist across renders and fetches
   const initialIdRef = useRef<string | null>(initialSelectedId || null);
+
+  // Prevent infinite loops when we auto-clean duplicates
+  const didCleanupDuplicatesRef = useRef(false);
   
   // Update ref if initialSelectedId changes (e.g., from navigation)
   useEffect(() => {
@@ -78,6 +81,91 @@ export function useUserProjects(initialSelectedId?: string | null) {
 
       if (projectsError) throw projectsError;
 
+      // --- Auto-clean duplicated projects for the current user (by name) ---
+      // Keep only the oldest project per normalized name, delete the rest + their tasks.
+      // Run at most once per session to avoid loops.
+      if (!didCleanupDuplicatesRef.current && projectsData && projectsData.length > 0) {
+        const byName = new Map<string, DbProject[]>();
+        for (const p of projectsData as DbProject[]) {
+          const key = (p.name || '').trim().toLowerCase();
+          if (!key) continue;
+          const arr = byName.get(key) || [];
+          arr.push(p);
+          byName.set(key, arr);
+        }
+
+        const duplicateIdsToDelete: string[] = [];
+        for (const [, arr] of byName) {
+          if (arr.length <= 1) continue;
+          // Oldest = smallest created_at
+          const sorted = [...arr].sort((a, b) => {
+            const at = new Date(a.created_at).getTime();
+            const bt = new Date(b.created_at).getTime();
+            return at - bt;
+          });
+          const toDelete = sorted.slice(1).map((p) => p.id);
+          duplicateIdsToDelete.push(...toDelete);
+        }
+
+        if (duplicateIdsToDelete.length > 0) {
+          didCleanupDuplicatesRef.current = true;
+
+          // Delete tasks that belong to duplicated projects
+          const { error: tasksDeleteError } = await supabase
+            .from('tasks')
+            .delete()
+            .eq('user_id', user.id)
+            .in('project_id', duplicateIdsToDelete);
+
+          if (tasksDeleteError) {
+            console.error('Error deleting duplicate project tasks:', tasksDeleteError);
+          }
+
+          // Delete duplicated projects
+          const { error: projectsDeleteError } = await supabase
+            .from('projects')
+            .delete()
+            .eq('user_id', user.id)
+            .in('id', duplicateIdsToDelete);
+
+          if (projectsDeleteError) {
+            console.error('Error deleting duplicate projects:', projectsDeleteError);
+          }
+
+          // Re-fetch clean lists (still within same fetch call)
+          const { data: projectsData2, error: projectsError2 } = await supabase
+            .from('projects')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false });
+          if (projectsError2) throw projectsError2;
+
+          const { data: tasksData2, error: tasksError2 } = await supabase
+            .from('tasks')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: true });
+          if (tasksError2) throw tasksError2;
+
+          setProjects(projectsData2 || []);
+          setTasks((tasksData2 as DbTask[]) || []);
+
+          // Continue selection logic using refreshed projects list
+          if (projectsData2 && projectsData2.length > 0) {
+            const targetId = initialIdRef.current;
+            if (targetId && projectsData2.some((p) => p.id === targetId)) {
+              setSelectedProjectId(targetId);
+              initialIdRef.current = null;
+            } else if (!selectedProjectId || forceRefresh) {
+              setSelectedProjectId(projectsData2[0].id);
+            }
+          }
+
+          return; // Done for this fetch
+        }
+      }
+
+      // If no duplicates (or already cleaned), proceed normally
       const { data: tasksData, error: tasksError } = await supabase
         .from('tasks')
         .select('*')
