@@ -6,11 +6,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import PasswordRequirements, { validatePassword } from '@/components/PasswordRequirements';
 
 const signupSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido').max(100, 'El nombre es muy largo'),
   email: z.string().email('Correo electrónico inválido').max(255, 'El correo es muy largo'),
-  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
+  password: z
+    .string()
+    .min(8, 'La contraseña debe tener al menos 8 caracteres')
+    .refine(
+      (val) => /[a-z]/.test(val) && /[A-Z]/.test(val) && /[0-9]/.test(val),
+      'La contraseña debe incluir mayúscula, minúscula y número'
+    ),
 });
 
 const loginSchema = z.object({
@@ -123,7 +130,9 @@ const Auth = () => {
             </Label>
             <Input
               id="name"
+              name="name"
               type="text"
+              autoComplete="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="h-14 bg-card border-border rounded-lg text-foreground"
@@ -137,27 +146,30 @@ const Auth = () => {
           </Label>
           <Input
             id="email"
+            name="email"
             type="email"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="h-14 bg-card border-border rounded-lg text-foreground"
           />
         </div>
 
-        {(isLogin || !isLogin) && (
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm text-muted-foreground">
-              Contraseña
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="h-14 bg-card border-border rounded-lg text-foreground"
-            />
-          </div>
-        )}
+        <div className="space-y-2">
+          <Label htmlFor="password" className="text-sm text-muted-foreground">
+            Contraseña
+          </Label>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete={isLogin ? 'current-password' : 'new-password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="h-14 bg-card border-border rounded-lg text-foreground"
+          />
+          {!isLogin && <PasswordRequirements password={password} />}
+        </div>
 
         <Button
           type="submit"
