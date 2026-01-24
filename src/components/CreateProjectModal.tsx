@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar } from 'lucide-react';
+import { X, Calendar, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -18,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { LoadingOverlay } from '@/components/LoadingOverlay';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -111,7 +110,6 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
       if (error) {
         console.error('Error creating goal:', error);
         toast.error('No se pudo guardar. Probá de nuevo.');
-        setIsSubmitting(false);
         return;
       }
 
@@ -132,21 +130,13 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
     } catch (err) {
       console.error('Unexpected error creating goal:', err);
       toast.error('No se pudo guardar. Probá de nuevo.');
+    } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <>
-      {/* Full-screen loading overlay */}
-      <LoadingOverlay
-        isVisible={isSubmitting}
-        message="Creando…"
-        delayedMessage="Esto puede tardar unos segundos"
-        delayMs={3000}
-      />
-
-      <AnimatePresence>
+    <AnimatePresence>
         {isOpen && (
           <>
             <motion.div
@@ -298,9 +288,16 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
               <button
                 type="submit"
                 disabled={!name.trim() || !category.trim() || isSubmitting}
-                className="w-full bg-primary text-primary-foreground font-semibold py-4 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                className="w-full bg-primary text-primary-foreground font-semibold py-4 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-opacity flex items-center justify-center gap-2"
               >
-                {isSubmitting ? 'Creando...' : 'Listo, crear meta!'}
+                {isSubmitting ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    <span>Creando...</span>
+                  </>
+                ) : (
+                  'Listo, crear meta!'
+                )}
               </button>
             </form>
             </div>
@@ -308,6 +305,5 @@ export const CreateProjectModal: FC<CreateProjectModalProps> = ({
         </>
       )}
     </AnimatePresence>
-    </>
   );
 };

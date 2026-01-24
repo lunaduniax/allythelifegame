@@ -1,8 +1,7 @@
 import { FC, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
 import { Project } from '@/types';
-import { LoadingOverlay } from '@/components/LoadingOverlay';
 import { toast } from 'sonner';
 
 interface CreateTaskModalProps {
@@ -62,42 +61,36 @@ export const CreateTaskModal: FC<CreateTaskModalProps> = ({
   };
 
   return (
-    <>
-      {/* Full-screen loading overlay */}
-      <LoadingOverlay
-        isVisible={isSubmitting}
-        message="Guardando…"
-        delayedMessage="Esto puede tardar unos segundos"
-        delayMs={3000}
-      />
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={isSubmitting ? undefined : onClose}
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 100 }}
+            className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-2xl border-t border-border max-h-[80vh] flex flex-col"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 pb-4 border-b border-border/50 flex-shrink-0">
+              <h2 className="text-xl font-semibold">Nueva tarea</h2>
+              <button
+                onClick={onClose}
+                disabled={isSubmitting}
+                className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center disabled:opacity-50"
+              >
+                <X size={18} />
+              </button>
+            </div>
 
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={isSubmitting ? undefined : onClose}
-              className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
-            />
-            <motion.div
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 100 }}
-              className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-2xl border-t border-border p-6 pb-8 max-h-[85vh] overflow-y-auto"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold">Nueva tarea</h2>
-                <button
-                  onClick={onClose}
-                  disabled={isSubmitting}
-                  className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center disabled:opacity-50"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-
+            {/* Scrollable Content */}
+            <div className="overflow-y-auto flex-1 p-6 pt-4">
               <p className="text-sm text-muted-foreground mb-6">
                 Proyecto: <span className="text-foreground font-medium">{project.name}</span>
               </p>
@@ -148,15 +141,22 @@ export const CreateTaskModal: FC<CreateTaskModalProps> = ({
                 <button
                   type="submit"
                   disabled={!title.trim() || !category.trim() || isSubmitting}
-                  className="w-full bg-primary text-primary-foreground font-semibold py-4 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                  className="w-full bg-primary text-primary-foreground font-semibold py-4 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-opacity flex items-center justify-center gap-2"
                 >
-                  {isSubmitting ? 'Guardando...' : 'Crear tarea'}
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 size={18} className="animate-spin" />
+                      <span>Guardando...</span>
+                    </>
+                  ) : (
+                    'Crear tarea'
+                  )}
                 </button>
               </form>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 };
