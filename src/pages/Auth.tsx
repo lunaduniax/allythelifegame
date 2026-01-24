@@ -135,6 +135,8 @@ const Auth = () => {
         if (error) {
           if (error.message.includes('already registered')) {
             toast.error('Este correo ya está registrado. Intentá iniciar sesión.');
+          } else if (error.message.toLowerCase().includes('rate limit')) {
+            toast.error('Demasiados intentos. Esperá unos minutos e intentá de nuevo.');
           } else {
             toast.error(error.message);
           }
