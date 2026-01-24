@@ -27,7 +27,7 @@ const ForgotPasswordModal = ({ open, onOpenChange }: ForgotPasswordModalProps) =
       const validatedEmail = z.string().email('Correo electrónico inválido').parse(email.trim());
 
       const { error } = await supabase.auth.resetPasswordForEmail(validatedEmail, {
-        redirectTo: 'https://allythelifegame.lovable.app/auth',
+        redirectTo: 'https://allythelifegame.lovable.app/reset-password',
       });
 
       if (error) {
