@@ -134,9 +134,15 @@ export function useProjectsQuery(initialSelectedId?: string | null) {
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId) || projects[0];
 
-  // ===== MUTATIONS WITH OPTIMISTIC UPDATES =====
+  // Helper to invalidate and refetch all data
+  const refreshData = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: PROJECTS_KEY });
+    queryClient.invalidateQueries({ queryKey: TASKS_KEY });
+  }, [queryClient]);
 
-  // Complete task mutation with optimistic update
+  // ===== MUTATIONS - Refresh data after each success =====
+
+  // Complete task mutation
   const completeTaskMutation = useMutation({
     mutationFn: async (taskId: string) => {
       if (!user) throw new Error('No user');
@@ -150,31 +156,17 @@ export function useProjectsQuery(initialSelectedId?: string | null) {
       if (error) throw error;
       return taskId;
     },
-    onMutate: async (taskId) => {
-      // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: TASKS_KEY });
-      
-      // Snapshot previous value
-      const previousTasks = queryClient.getQueryData<DbTask[]>(TASKS_KEY);
-      
-      // Optimistically update
-      queryClient.setQueryData<DbTask[]>(TASKS_KEY, (old) =>
-        old?.map((t) => (t.id === taskId ? { ...t, status: 'completed' as const } : t)) || []
-      );
-      
-      return { previousTasks };
+    onSuccess: () => {
+      // Refresh data after successful mutation
+      refreshData();
     },
-    onError: (err, taskId, context) => {
+    onError: (err) => {
       console.error('Error completing task:', err);
-      // Rollback on error
-      if (context?.previousTasks) {
-        queryClient.setQueryData(TASKS_KEY, context.previousTasks);
-      }
       toast.error('Error al completar tarea');
     },
   });
 
-  // Add task mutation with optimistic update
+  // Add task mutation
   const addTaskMutation = useMutation({
     mutationFn: async ({ 
       projectId, 
@@ -202,45 +194,17 @@ export function useProjectsQuery(initialSelectedId?: string | null) {
       if (error) throw error;
       return data as DbTask;
     },
-    onMutate: async ({ projectId, taskData }) => {
-      await queryClient.cancelQueries({ queryKey: TASKS_KEY });
-      
-      const previousTasks = queryClient.getQueryData<DbTask[]>(TASKS_KEY);
-      
-      // Create optimistic task
-      const optimisticTask: DbTask = {
-        id: `temp-${Date.now()}`,
-        project_id: projectId,
-        user_id: user!.id,
-        title: taskData.title,
-        category: taskData.category || null,
-        date: taskData.date || null,
-        description: taskData.description || null,
-        status: 'in_progress',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      
-      queryClient.setQueryData<DbTask[]>(TASKS_KEY, (old) => [...(old || []), optimisticTask]);
-      
-      return { previousTasks, optimisticTask };
+    onSuccess: () => {
+      // Refresh data after successful mutation
+      refreshData();
     },
-    onSuccess: (newTask, variables, context) => {
-      // Replace optimistic task with real one
-      queryClient.setQueryData<DbTask[]>(TASKS_KEY, (old) =>
-        old?.map((t) => (t.id === context?.optimisticTask.id ? newTask : t)) || []
-      );
-    },
-    onError: (err, variables, context) => {
+    onError: (err) => {
       console.error('Error adding task:', err);
-      if (context?.previousTasks) {
-        queryClient.setQueryData(TASKS_KEY, context.previousTasks);
-      }
       toast.error('Error al crear tarea');
     },
   });
 
-  // Add project mutation with optimistic update
+  // Add project mutation
   const addProjectMutation = useMutation({
     mutationFn: async (projectData: { 
       name: string; 
@@ -270,8 +234,8 @@ export function useProjectsQuery(initialSelectedId?: string | null) {
       return data as DbProject;
     },
     onSuccess: (newProject) => {
-      // Add to cache and select it
-      queryClient.setQueryData<DbProject[]>(PROJECTS_KEY, (old) => [newProject, ...(old || [])]);
+      // Refresh data and select the new project
+      refreshData();
       setSelectedProjectId(newProject.id);
     },
     onError: (err) => {
@@ -280,7 +244,7 @@ export function useProjectsQuery(initialSelectedId?: string | null) {
     },
   });
 
-  // Delete project mutation with optimistic update
+  // Delete project mutation
   const deleteProjectMutation = useMutation({
     mutationFn: async (projectId: string) => {
       if (!user) throw new Error('No user');
@@ -305,35 +269,18 @@ export function useProjectsQuery(initialSelectedId?: string | null) {
       
       return projectId;
     },
-    onMutate: async (projectId) => {
-      await queryClient.cancelQueries({ queryKey: PROJECTS_KEY });
-      await queryClient.cancelQueries({ queryKey: TASKS_KEY });
+    onSuccess: (deletedProjectId) => {
+      // Refresh data
+      refreshData();
       
-      const previousProjects = queryClient.getQueryData<DbProject[]>(PROJECTS_KEY);
-      const previousTasks = queryClient.getQueryData<DbTask[]>(TASKS_KEY);
-      
-      // Optimistically remove project and its tasks
-      const newProjects = previousProjects?.filter((p) => p.id !== projectId) || [];
-      const newTasks = previousTasks?.filter((t) => t.project_id !== projectId) || [];
-      
-      queryClient.setQueryData(PROJECTS_KEY, newProjects);
-      queryClient.setQueryData(TASKS_KEY, newTasks);
-      
-      // Update selection
-      if (selectedProjectId === projectId) {
-        setSelectedProjectId(newProjects.length > 0 ? newProjects[0].id : null);
+      // Update selection if deleted project was selected
+      if (selectedProjectId === deletedProjectId) {
+        const remaining = projects.filter(p => p.id !== deletedProjectId);
+        setSelectedProjectId(remaining.length > 0 ? remaining[0].id : null);
       }
-      
-      return { previousProjects, previousTasks, deletedProjectId: projectId };
     },
-    onError: (err, projectId, context) => {
+    onError: (err) => {
       console.error('Error deleting project:', err);
-      if (context?.previousProjects) {
-        queryClient.setQueryData(PROJECTS_KEY, context.previousProjects);
-      }
-      if (context?.previousTasks) {
-        queryClient.setQueryData(TASKS_KEY, context.previousTasks);
-      }
       toast.error('Error al eliminar meta');
     },
   });
@@ -358,8 +305,9 @@ export function useProjectsQuery(initialSelectedId?: string | null) {
       if (error) throw error;
       return data as DbTask[];
     },
-    onSuccess: (newTasks) => {
-      queryClient.setQueryData<DbTask[]>(TASKS_KEY, (old) => [...(old || []), ...newTasks]);
+    onSuccess: () => {
+      // Refresh data after successful mutation
+      refreshData();
     },
     onError: (err) => {
       console.error('Error adding tasks:', err);
@@ -433,11 +381,6 @@ export function useProjectsQuery(initialSelectedId?: string | null) {
     [addMultipleTasksMutation]
   );
 
-  const refetch = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: PROJECTS_KEY });
-    queryClient.invalidateQueries({ queryKey: TASKS_KEY });
-  }, [queryClient]);
-
   const loading = projectsQuery.isLoading || tasksQuery.isLoading || authLoading;
   const hasFetched = projectsQuery.isFetched && tasksQuery.isFetched;
 
@@ -457,7 +400,7 @@ export function useProjectsQuery(initialSelectedId?: string | null) {
     deleteProject,
     addMultipleTasks,
     inProgressTasks,
-    refetch,
+    refetch: refreshData,
     // Mutation states for UI feedback
     isCompletingTask: completeTaskMutation.isPending,
     isAddingTask: addTaskMutation.isPending,
