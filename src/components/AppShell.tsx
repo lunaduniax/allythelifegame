@@ -8,7 +8,6 @@ import { DemoModeBanner } from '@/components/DemoModeBanner';
 import { useUserProjects } from '@/hooks/useUserProjects';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useDemoMode } from '@/contexts/DemoModeContext';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
@@ -25,7 +24,15 @@ export const AppShell = () => {
     name: string;
     category: string;
   } | null>(null);
-  const { projects, addProject, refetch, hasFetched } = useUserProjects();
+  
+  const { 
+    projects, 
+    addProject, 
+    addMultipleTasks,
+    refetch, 
+    hasFetched 
+  } = useUserProjects();
+  
   const { unreadCount, createNotification } = useNotifications();
 
   // Auto-open modal when user has 0 goals (only for authenticated users, not demo mode)
@@ -55,7 +62,8 @@ export const AppShell = () => {
   };
 
   const handleCreateSuccess = async () => {
-    await refetch();
+    // React Query will auto-update, but refetch to ensure consistency
+    refetch();
     setIsCreateFlowOpen(false);
   };
 
@@ -69,60 +77,49 @@ export const AppShell = () => {
     goal: { name: string; category: string },
     tasks: string[]
   ) => {
-    const newProject = await addProject({
-      name: goal.name,
-      category: goal.category,
-      color: '#D4FE00',
-      reminderFrequency: '3 veces por semana',
-    });
+    try {
+      const newProject = await addProject({
+        name: goal.name,
+        category: goal.category,
+        color: '#D4FE00',
+        reminderFrequency: '3 veces por semana',
+      });
 
-    if (newProject && user) {
-      if (tasks.length > 0) {
-        const taskInserts = tasks.map(title => ({
-          user_id: user.id,
-          project_id: newProject.id,
-          title,
-          status: 'in_progress',
-        }));
-        await supabase.from('tasks').insert(taskInserts);
+      if (newProject && user) {
+        if (tasks.length > 0) {
+          await addMultipleTasks(newProject.id, tasks);
+        }
+
+        await createNotification(
+          'Nueva meta creada con AllyGPT',
+          `AllyGPT te ayudó a crear la meta "${goal.name}". ¡Vamos a lograrla!`
+        );
+
+        toast.success('Meta creada con éxito');
+        navigate('/', { state: { selectedProjectId: newProject.id } });
       }
-
-      await createNotification(
-        'Nueva meta creada con AllyGPT',
-        `AllyGPT te ayudó a crear la meta "${goal.name}". ¡Vamos a lograrla!`
-      );
-
-      await refetch();
-      toast.success('Meta creada con éxito');
-      navigate('/', { state: { selectedProjectId: newProject.id } });
+    } catch (error) {
+      console.error('Error creating goal from AllyGPT:', error);
+      toast.error('Error al crear la meta');
     }
   };
 
   const handleAddTasksFromAllyGPT = async (projectId: string, tasks: string[]) => {
     if (!user || tasks.length === 0) return;
 
-    const taskInserts = tasks.map(title => ({
-      user_id: user.id,
-      project_id: projectId,
-      title,
-      status: 'in_progress',
-    }));
+    try {
+      await addMultipleTasks(projectId, tasks);
 
-    const { error } = await supabase.from('tasks').insert(taskInserts);
+      await createNotification(
+        'Tareas agregadas',
+        `AllyGPT agregó ${tasks.length} tareas nuevas a tu meta.`
+      );
 
-    if (error) {
+      toast.success(`${tasks.length} tareas agregadas`);
+    } catch (error) {
       console.error('Error adding tasks:', error);
       toast.error('Error al agregar tareas');
-      return;
     }
-
-    await createNotification(
-      'Tareas agregadas',
-      `AllyGPT agregó ${tasks.length} tareas nuevas a tu meta.`
-    );
-
-    await refetch();
-    toast.success(`${tasks.length} tareas agregadas`);
   };
 
   // Demo mode action handler - shows toast instead of performing action

@@ -39,6 +39,7 @@ const Index = ({ initialProjectId }: IndexProps) => {
     deleteProject,
     inProgressTasks,
     loading,
+    isCompletingTask,
   } = useUserProjects(initialProjectId);
 
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -59,13 +60,30 @@ const Index = ({ initialProjectId }: IndexProps) => {
       return;
     }
     
-    const { success, remainingProjects } = await deleteProject(projectId);
+    const { success } = await deleteProject(projectId);
     
     if (success) {
       toast.success('Meta eliminada');
-      // AppShell will auto-open the create modal when 0 projects remain
-    } else {
-      toast.error('Error al eliminar la meta');
+    }
+    // Error toast is handled in the hook
+  };
+
+  const handleCompleteTask = async (taskId: string) => {
+    if (isDemoMode) {
+      toast.info('Modo demo', { description: 'Inicia sesión para completar tareas' });
+      return;
+    }
+    
+    const task = inProgressTasks.find(t => t.id === taskId);
+    
+    // Optimistic - UI updates immediately via React Query
+    await completeTask(taskId);
+    
+    if (task && createNotification) {
+      await createNotification(
+        'Tarea completada',
+        `Has completado "${task.title}". ¡Sigue así!`
+      );
     }
   };
 
@@ -99,8 +117,8 @@ const Index = ({ initialProjectId }: IndexProps) => {
     ? 'Usuario Demo' 
     : (user?.user_metadata?.name || user?.email?.split('@')[0] || 'Usuario');
 
-  // Show loading state
-  if (loading) {
+  // Show loading state only on initial load
+  if (loading && projects.length === 0) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="animate-pulse text-muted-foreground">Cargando...</div>
@@ -163,20 +181,7 @@ const Index = ({ initialProjectId }: IndexProps) => {
           projectName={mappedSelectedProject.name}
           projectColor={mappedSelectedProject.color}
           tasks={mappedTasks}
-          onCompleteTask={async (taskId) => {
-            if (isDemoMode) {
-              toast.info('Modo demo', { description: 'Inicia sesión para completar tareas' });
-              return;
-            }
-            const task = mappedTasks.find(t => t.id === taskId);
-            await completeTask(taskId);
-            if (task && createNotification) {
-              await createNotification(
-                'Tarea completada',
-                `Has completado "${task.title}". ¡Sigue así!`
-              );
-            }
-          }}
+          onCompleteTask={handleCompleteTask}
           onCreateTask={() => {
             if (isDemoMode) {
               toast.info('Modo demo', { description: 'Inicia sesión para crear tareas' });
