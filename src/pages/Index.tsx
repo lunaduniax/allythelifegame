@@ -14,6 +14,8 @@ interface AppShellContext {
   openCreateFlow: () => void;
   openAllyGPT: (projectContext: { id: string; name: string; category: string } | null) => void;
   isDemoMode?: boolean;
+  isTaskModalOpen: boolean;
+  setIsTaskModalOpen: (open: boolean) => void;
 }
 
 interface IndexProps {
@@ -27,6 +29,8 @@ const Index = ({ initialProjectId }: IndexProps) => {
   const openCreateFlow = context?.openCreateFlow;
   const openAllyGPT = context?.openAllyGPT;
   const isDemoMode = context?.isDemoMode || false;
+  const isTaskModalOpen = context?.isTaskModalOpen || false;
+  const setIsTaskModalOpen = context?.setIsTaskModalOpen || (() => {});
   
   const {
     projects,
@@ -42,7 +46,7 @@ const Index = ({ initialProjectId }: IndexProps) => {
     isCompletingTask,
   } = useUserProjects(initialProjectId);
 
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  
 
   const handleCreateTask = async (data: { title: string; category: string; date: string; description: string }) => {
     if (isDemoMode) {

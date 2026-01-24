@@ -18,6 +18,7 @@ export const AppShell = () => {
   const { isDemoMode } = useDemoMode();
   const [isCreateFlowOpen, setIsCreateFlowOpen] = useState(false);
   const [isAllyGPTOpen, setIsAllyGPTOpen] = useState(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [profileOnboardingComplete, setProfileOnboardingComplete] = useState(false);
   const [selectedProjectContext, setSelectedProjectContext] = useState<{
     id: string;
@@ -146,18 +147,24 @@ export const AppShell = () => {
               ? () => handleDemoAction('usar AllyGPT') 
               : handleOpenAllyGPT,
             isDemoMode,
+            isTaskModalOpen,
+            setIsTaskModalOpen: isDemoMode
+              ? () => handleDemoAction('crear tareas')
+              : setIsTaskModalOpen,
           }}
         />
       </div>
 
-      <BottomNav
-        activeTab={getActiveTab()}
-        onTabChange={handleTabChange}
-        onCreateTask={isDemoMode 
-          ? () => handleDemoAction('crear tareas') 
-          : () => setIsCreateFlowOpen(true)}
-        unreadNotifications={unreadCount}
-      />
+      {!isTaskModalOpen && (
+        <BottomNav
+          activeTab={getActiveTab()}
+          onTabChange={handleTabChange}
+          onCreateTask={isDemoMode 
+            ? () => handleDemoAction('crear tareas') 
+            : () => setIsCreateFlowOpen(true)}
+          unreadNotifications={unreadCount}
+        />
+      )}
 
       {!isDemoMode && (
         <>
