@@ -15,6 +15,7 @@ import Settings from "./pages/Settings";
 import Help from "./pages/Help";
 import About from "./pages/About";
 import Notifications from "./pages/Notifications";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -91,6 +92,7 @@ const AppWithDemoMode = () => {
         <Routes>
           {/* Public routes */}
           <Route path="/auth" element={<Auth />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Main app routes with persistent bottom nav */}
           <Route
