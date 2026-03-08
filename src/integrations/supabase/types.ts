@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      community_content: {
+        Row: {
+          author: string | null
+          created_at: string
+          description: string | null
+          duration: string | null
+          featured: boolean
+          id: string
+          thumbnail_url: string | null
+          title: string
+          type: string
+          updated_at: string
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          author?: string | null
+          created_at?: string
+          description?: string | null
+          duration?: string | null
+          featured?: boolean
+          id?: string
+          thumbnail_url?: string | null
+          title: string
+          type?: string
+          updated_at?: string
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          author?: string | null
+          created_at?: string
+          description?: string | null
+          duration?: string | null
+          featured?: boolean
+          id?: string
+          thumbnail_url?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       community_favorites: {
         Row: {
           content_id: string
