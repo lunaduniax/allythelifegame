@@ -1,11 +1,11 @@
 import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ListTodo, Plus, Bell, Smile } from 'lucide-react';
+import { ListTodo, GraduationCap, Plus, Bell, Smile } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface BottomNavProps {
-  activeTab: 'home' | 'create' | 'notifications' | 'profile';
-  onTabChange: (tab: 'home' | 'create' | 'notifications' | 'profile') => void;
+  activeTab: 'home' | 'community' | 'create' | 'notifications' | 'profile';
+  onTabChange: (tab: 'home' | 'community' | 'create' | 'notifications' | 'profile') => void;
   onCreateTask: () => void;
   unreadNotifications?: number;
 }
@@ -20,16 +20,19 @@ export const BottomNav: FC<BottomNavProps> = ({
   
   const navItems = [
     { id: 'home' as const, icon: ListTodo, label: 'Home' },
+    { id: 'community' as const, icon: GraduationCap, label: 'Community' },
     { id: 'create' as const, icon: Plus, label: 'Create', isAction: true },
     { id: 'notifications' as const, icon: Bell, label: 'Notifications' },
     { id: 'profile' as const, icon: Smile, label: 'Profile' },
   ];
 
-  const handleTabClick = (id: 'home' | 'create' | 'notifications' | 'profile') => {
+  const handleTabClick = (id: 'home' | 'community' | 'create' | 'notifications' | 'profile') => {
     if (id === 'profile') {
       navigate('/account');
     } else if (id === 'notifications') {
       navigate('/notifications');
+    } else if (id === 'community') {
+      navigate('/community');
     } else {
       onTabChange(id);
     }
