@@ -20,6 +20,7 @@ export const BottomNav: FC<BottomNavProps> = ({
   
   const navItems = [
     { id: 'home' as const, icon: ListTodo, label: 'Home' },
+    { id: 'community' as const, icon: GraduationCap, label: 'Community' },
     { id: 'create' as const, icon: Plus, label: 'Create', isAction: true },
     { id: 'notifications' as const, icon: Bell, label: 'Notifications' },
     { id: 'profile' as const, icon: Smile, label: 'Profile' },
