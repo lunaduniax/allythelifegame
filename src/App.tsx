@@ -19,6 +19,7 @@ import Help from "./pages/Help";
 import About from "./pages/About";
 import Notifications from "./pages/Notifications";
 import ResetPassword from "./pages/ResetPassword";
+import Community from "./pages/Community";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
