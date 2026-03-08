@@ -1,8 +1,11 @@
+import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useSearchParams } from "react-router-dom";
+import SplashScreen from "@/components/SplashScreen";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserProjects } from "@/hooks/useUserProjects";
 import { DemoModeProvider } from "@/contexts/DemoModeContext";
