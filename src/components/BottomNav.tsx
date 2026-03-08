@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ListTodo, Plus, Bell, Smile } from 'lucide-react';
+import { ListTodo, GraduationCap, Plus, Bell, Smile } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface BottomNavProps {
