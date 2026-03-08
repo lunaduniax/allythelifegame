@@ -106,6 +106,20 @@ const NowPlayingView = ({ item, onBack }: NowPlayingViewProps) => {
 
         {/* Controls Section */}
         <div className="px-6 pb-10">
+          {/* Play/Pause Button */}
+          <div className="flex justify-center mb-4">
+            <button
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/30"
+            >
+              {isPlaying ? (
+                <Pause size={24} className="text-primary-foreground" fill="currentColor" />
+              ) : (
+                <Play size={24} className="text-primary-foreground ml-0.5" fill="currentColor" />
+              )}
+            </button>
+          </div>
+
           {/* Progress Bar */}
           <div className="mb-2">
             <Slider
@@ -117,16 +131,6 @@ const NowPlayingView = ({ item, onBack }: NowPlayingViewProps) => {
             />
             <div className="flex items-center justify-between mt-1.5">
               <span className="text-[11px] text-primary font-medium">{formatTime(currentSeconds)}</span>
-              <button
-                onClick={() => setIsPlaying(!isPlaying)}
-                className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center"
-              >
-                {isPlaying ? (
-                  <Pause size={14} className="text-primary" fill="currentColor" />
-                ) : (
-                  <Play size={14} className="text-primary ml-0.5" fill="currentColor" />
-                )}
-              </button>
               <span className="text-[11px] text-muted-foreground">-{formatTime(remainingSeconds)}</span>
             </div>
           </div>
