@@ -170,6 +170,13 @@ const Community = () => {
           </div>
         )}
       </div>
+
+      {/* Now Playing Overlay */}
+      <AnimatePresence>
+        {nowPlaying && (
+          <NowPlayingView item={nowPlaying} onBack={() => setNowPlaying(null)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
