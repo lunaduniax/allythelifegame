@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Video, Headphones, Music, BookOpen, Library, Play, Heart, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import NowPlayingView from '@/components/NowPlayingView';
 
 const categories = [
   { id: 'all', label: 'Todo' },
