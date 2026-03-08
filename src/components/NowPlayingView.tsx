@@ -60,7 +60,7 @@ const NowPlayingView = ({ item, onBack }: NowPlayingViewProps) => {
       animate={{ y: 0 }}
       exit={{ y: '100%' }}
       transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-      className="fixed inset-0 z-50 flex flex-col"
+      className="fixed inset-0 z-50 flex flex-col items-center"
       style={{
         background: 'linear-gradient(180deg, hsl(var(--secondary)) 0%, hsl(var(--background)) 60%)',
       }}
