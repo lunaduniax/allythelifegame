@@ -26,11 +26,13 @@ export const BottomNav: FC<BottomNavProps> = ({
     { id: 'profile' as const, icon: Smile, label: 'Profile' },
   ];
 
-  const handleTabClick = (id: 'home' | 'create' | 'notifications' | 'profile') => {
+  const handleTabClick = (id: 'home' | 'community' | 'create' | 'notifications' | 'profile') => {
     if (id === 'profile') {
       navigate('/account');
     } else if (id === 'notifications') {
       navigate('/notifications');
+    } else if (id === 'community') {
+      navigate('/community');
     } else {
       onTabChange(id);
     }

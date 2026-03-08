@@ -53,9 +53,11 @@ export const AppShell = () => {
     return 'home';
   };
 
-  const handleTabChange = (tab: 'home' | 'create' | 'notifications' | 'profile') => {
+  const handleTabChange = (tab: 'home' | 'community' | 'create' | 'notifications' | 'profile') => {
     if (tab === 'home') {
       navigate('/');
+    } else if (tab === 'community') {
+      navigate('/community');
     } else if (tab === 'profile') {
       navigate('/account');
     } else if (tab === 'notifications') {

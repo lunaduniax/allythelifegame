@@ -112,6 +112,7 @@ const AppWithDemoMode = () => {
             <Route path="/settings" element={<Settings />} />
             <Route path="/help" element={<Help />} />
             <Route path="/about" element={<About />} />
+            <Route path="/community" element={<Community />} />
             <Route path="/notifications" element={<Notifications />} />
           </Route>
 
