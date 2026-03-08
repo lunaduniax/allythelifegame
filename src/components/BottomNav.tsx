@@ -4,8 +4,8 @@ import { ListTodo, GraduationCap, Plus, Bell, Smile } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface BottomNavProps {
-  activeTab: 'home' | 'create' | 'notifications' | 'profile';
-  onTabChange: (tab: 'home' | 'create' | 'notifications' | 'profile') => void;
+  activeTab: 'home' | 'community' | 'create' | 'notifications' | 'profile';
+  onTabChange: (tab: 'home' | 'community' | 'create' | 'notifications' | 'profile') => void;
   onCreateTask: () => void;
   unreadNotifications?: number;
 }
