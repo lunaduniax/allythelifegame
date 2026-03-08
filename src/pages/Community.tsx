@@ -58,6 +58,7 @@ const contentItems = [
 
 const Community = () => {
   const [active, setActive] = useState<CategoryId>('all');
+  const [nowPlaying, setNowPlaying] = useState<(typeof contentItems)[number] | null>(null);
 
   const filtered = active === 'all' ? contentItems : contentItems.filter((i) => i.type === active);
   const featured = active === 'all' ? featuredItems : featuredItems.filter((i) => i.category === active);
