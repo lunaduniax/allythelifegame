@@ -44,9 +44,10 @@ export const AppShell = () => {
   }, [hasFetched, projects.length, isDemoMode]);
 
   // Determine active tab based on current route
-  const getActiveTab = (): 'home' | 'create' | 'notifications' | 'profile' => {
+  const getActiveTab = (): 'home' | 'community' | 'create' | 'notifications' | 'profile' => {
     const path = location.pathname;
     if (path === '/' || path === '/home') return 'home';
+    if (path === '/community') return 'community';
     if (path === '/notifications') return 'notifications';
     if (['/account', '/settings', '/help', '/about'].includes(path)) return 'profile';
     return 'home';
