@@ -141,7 +141,8 @@ const Community = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ delay: i * 0.03 }}
-                className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-card border border-border/50 active:scale-[0.98] transition-transform"
+                className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-card border border-border/50 active:scale-[0.98] transition-transform cursor-pointer"
+                onClick={() => setNowPlaying(item)}
               >
                 <div className="w-11 h-11 rounded-xl bg-secondary flex items-center justify-center shrink-0">
                   <item.icon size={20} className="text-primary" />
