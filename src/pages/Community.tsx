@@ -3,9 +3,11 @@ import { Video, Headphones, Music, BookOpen, Library, Play, Heart, Clock } from 
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import NowPlayingView from '@/components/NowPlayingView';
+import { useFavorites } from '@/hooks/useFavorites';
 
 const categories = [
   { id: 'all', label: 'Todo' },
+  { id: 'favorites', label: '❤️ Favoritos' },
   { id: 'videos', label: 'Videos' },
   { id: 'podcasts', label: 'Podcasts' },
   { id: 'music', label: 'Música' },
@@ -59,9 +61,21 @@ const contentItems = [
 const Community = () => {
   const [active, setActive] = useState<CategoryId>('all');
   const [nowPlaying, setNowPlaying] = useState<(typeof contentItems)[number] | null>(null);
+  const { favoriteIds, isFavorite, toggleFavorite } = useFavorites();
 
-  const filtered = active === 'all' ? contentItems : contentItems.filter((i) => i.type === active);
-  const featured = active === 'all' ? featuredItems : featuredItems.filter((i) => i.category === active);
+  const filtered =
+    active === 'favorites'
+      ? contentItems.filter((i) => favoriteIds.includes(i.id))
+      : active === 'all'
+        ? contentItems
+        : contentItems.filter((i) => i.type === active);
+
+  const featured =
+    active === 'favorites'
+      ? []
+      : active === 'all'
+        ? featuredItems
+        : featuredItems.filter((i) => i.category === active);
 
   return (
     <div className="px-5 pt-14 pb-6">
@@ -71,8 +85,20 @@ const Community = () => {
           <h1 className="text-2xl font-bold text-foreground">Comunidad</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Aprende, escucha y crece</p>
         </div>
-        <button className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center">
-          <Heart size={18} className="text-muted-foreground" />
+        <button
+          onClick={() => setActive(active === 'favorites' ? 'all' : 'favorites')}
+          className={cn(
+            'w-10 h-10 rounded-xl flex items-center justify-center transition-colors',
+            active === 'favorites' ? 'bg-primary' : 'bg-secondary'
+          )}
+        >
+          <Heart
+            size={18}
+            className={cn(
+              'transition-colors',
+              active === 'favorites' ? 'text-primary-foreground fill-primary-foreground' : 'text-muted-foreground'
+            )}
+          />
         </button>
       </div>
 
@@ -127,7 +153,11 @@ const Community = () => {
       <div>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-semibold text-foreground">
-            {active === 'all' ? 'Todo el contenido' : categories.find((c) => c.id === active)?.label}
+            {active === 'favorites'
+              ? 'Tus favoritos'
+              : active === 'all'
+                ? 'Todo el contenido'
+                : categories.find((c) => c.id === active)?.label}
           </h2>
           <span className="text-xs text-muted-foreground">{filtered.length} items</span>
         </div>
@@ -153,8 +183,20 @@ const Community = () => {
                     {item.author} · {item.meta}
                   </p>
                 </div>
-                <button className="w-9 h-9 rounded-full bg-secondary/80 flex items-center justify-center shrink-0">
-                  <Play size={14} className="text-foreground ml-0.5" fill="currentColor" />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(item.id);
+                  }}
+                  className="w-9 h-9 rounded-full bg-secondary/80 flex items-center justify-center shrink-0"
+                >
+                  <Heart
+                    size={14}
+                    className={cn(
+                      'transition-colors',
+                      isFavorite(item.id) ? 'text-primary fill-primary' : 'text-muted-foreground'
+                    )}
+                  />
                 </button>
               </motion.div>
             ))}
@@ -163,10 +205,16 @@ const Community = () => {
 
         {filtered.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-muted-foreground text-sm">No hay contenido en esta categoría aún</p>
-            <span className="inline-block mt-2 text-xs font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
-              Próximamente
-            </span>
+            <p className="text-muted-foreground text-sm">
+              {active === 'favorites'
+                ? 'Aún no tenés favoritos. Tocá el ❤️ en cualquier contenido para guardarlo.'
+                : 'No hay contenido en esta categoría aún'}
+            </p>
+            {active !== 'favorites' && (
+              <span className="inline-block mt-2 text-xs font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
+                Próximamente
+              </span>
+            )}
           </div>
         )}
       </div>
