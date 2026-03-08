@@ -117,6 +117,16 @@ const NowPlayingView = ({ item, onBack }: NowPlayingViewProps) => {
             />
             <div className="flex items-center justify-between mt-1.5">
               <span className="text-[11px] text-primary font-medium">{formatTime(currentSeconds)}</span>
+              <button
+                onClick={() => setIsPlaying(!isPlaying)}
+                className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center"
+              >
+                {isPlaying ? (
+                  <Pause size={14} className="text-primary" fill="currentColor" />
+                ) : (
+                  <Play size={14} className="text-primary ml-0.5" fill="currentColor" />
+                )}
+              </button>
               <span className="text-[11px] text-muted-foreground">-{formatTime(remainingSeconds)}</span>
             </div>
           </div>
