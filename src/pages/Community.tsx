@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Video, Headphones, Music, BookOpen, Library, Play, Heart, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import NowPlayingView from '@/components/NowPlayingView';
 
 const categories = [
   { id: 'all', label: 'Todo' },
@@ -57,6 +58,7 @@ const contentItems = [
 
 const Community = () => {
   const [active, setActive] = useState<CategoryId>('all');
+  const [nowPlaying, setNowPlaying] = useState<(typeof contentItems)[number] | null>(null);
 
   const filtered = active === 'all' ? contentItems : contentItems.filter((i) => i.type === active);
   const featured = active === 'all' ? featuredItems : featuredItems.filter((i) => i.category === active);
@@ -139,7 +141,8 @@ const Community = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ delay: i * 0.03 }}
-                className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-card border border-border/50 active:scale-[0.98] transition-transform"
+                className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-card border border-border/50 active:scale-[0.98] transition-transform cursor-pointer"
+                onClick={() => setNowPlaying(item)}
               >
                 <div className="w-11 h-11 rounded-xl bg-secondary flex items-center justify-center shrink-0">
                   <item.icon size={20} className="text-primary" />
@@ -167,6 +170,13 @@ const Community = () => {
           </div>
         )}
       </div>
+
+      {/* Now Playing Overlay */}
+      <AnimatePresence>
+        {nowPlaying && (
+          <NowPlayingView item={nowPlaying} onBack={() => setNowPlaying(null)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
