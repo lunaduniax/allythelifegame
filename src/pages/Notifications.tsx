@@ -67,27 +67,46 @@ const Notifications = () => {
             {notifications.map((notification) => (
               <div
                 key={notification.id}
+                onClick={() => handleNotificationClick(notification.id, notification.read)}
                 className={cn(
-                  "border border-border rounded-xl p-4 transition-colors",
-                  !notification.read && "bg-primary/5 border-primary/20"
+                  "border border-border rounded-xl p-4 transition-all",
+                  !notification.read
+                    ? "bg-primary/5 border-primary/20 cursor-pointer active:scale-[0.98]"
+                    : "opacity-70"
                 )}
               >
                 <div className="w-full">
                   <div className="flex items-center justify-between gap-2 mb-1">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                      {!notification.read && (
+                      {!notification.read ? (
                         <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
+                      ) : (
+                        <div className="w-2 h-2 flex-shrink-0" />
                       )}
                       <h3 className={cn(
                         "font-medium truncate",
-                        !notification.read && "text-foreground"
+                        !notification.read ? "text-foreground" : "text-muted-foreground"
                       )}>
                         {notification.title}
                       </h3>
                     </div>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap flex-shrink-0">
-                      hace {formatTime(notification.created_at)}
-                    </span>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">
+                        hace {formatTime(notification.created_at)}
+                      </span>
+                      {!notification.read && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); markAsRead(notification.id); }}
+                          className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/40 transition-colors"
+                          title="Marcar como leída"
+                        >
+                          <Check size={12} className="text-primary" />
+                        </button>
+                      )}
+                      {notification.read && (
+                        <Circle size={14} className="text-muted-foreground/30" />
+                      )}
+                    </div>
                   </div>
                   <p className="text-sm text-muted-foreground w-full">
                     {notification.message}
