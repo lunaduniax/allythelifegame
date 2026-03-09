@@ -88,12 +88,12 @@ const Pomodoro = () => {
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-background overflow-hidden">
       {/* Rising color fill */}
-      <motion.div
-        className="absolute bottom-0 left-0 right-0 z-0"
-        initial={{ height: '0%' }}
-        animate={{ height: `${fillPercent}%` }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
-        style={{ backgroundColor: getColor() }}
+      <div
+        className="absolute bottom-0 left-0 right-0 z-0 transition-all duration-1000 ease-linear"
+        style={{
+          height: `${fillPercent}%`,
+          backgroundColor: getColor(),
+        }}
       />
 
       {/* Content on top */}
