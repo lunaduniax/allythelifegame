@@ -10,12 +10,11 @@ const Notifications = () => {
   const navigate = useNavigate();
   const { notifications, loading, unreadCount, markAllAsRead, markAsRead } = useNotifications();
 
-  // Mark all as read when visiting this page
-  useEffect(() => {
-    if (unreadCount > 0) {
-      markAllAsRead();
+  const handleNotificationClick = (notificationId: string, isRead: boolean) => {
+    if (!isRead) {
+      markAsRead(notificationId);
     }
-  }, []);
+  };
 
   const formatTime = (dateString: string) => {
     try {
