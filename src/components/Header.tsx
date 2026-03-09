@@ -27,13 +27,22 @@ export const Header: FC<HeaderProps> = ({
             proyectos
           </h1>
         </div>
-        <button
-          onClick={() => navigate('/dashboard')}
-          className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center mt-2"
-          title="Ver métricas"
-        >
-          <BarChart3 size={18} className="text-muted-foreground" />
-        </button>
+        <div className="flex gap-2 mt-2">
+          <button
+            onClick={() => navigate('/pomodoro')}
+            className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center"
+            title="Pomodoro"
+          >
+            <Timer size={18} className="text-muted-foreground" />
+          </button>
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center"
+            title="Ver métricas"
+          >
+            <BarChart3 size={18} className="text-muted-foreground" />
+          </button>
+        </div>
       </div>
     </header>
   );
