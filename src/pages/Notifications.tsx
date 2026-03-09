@@ -1,6 +1,5 @@
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Bell, Check } from 'lucide-react';
+import { ChevronLeft, Bell, Check, Circle } from 'lucide-react';
 import { useNotifications } from '@/hooks/useNotifications';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
