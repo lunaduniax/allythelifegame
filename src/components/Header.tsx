@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BarChart3 } from 'lucide-react';
+import { BarChart3, Timer } from 'lucide-react';
 
 interface HeaderProps {
   userName: string;
