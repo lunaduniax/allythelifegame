@@ -20,6 +20,7 @@ import About from "./pages/About";
 import Notifications from "./pages/Notifications";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
+import Pomodoro from "./pages/Pomodoro";
 import Community from "./pages/Community";
 import NotFound from "./pages/NotFound";
 
@@ -116,6 +117,7 @@ const AppWithDemoMode = () => {
             <Route path="/community" element={<Community />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/pomodoro" element={<Pomodoro />} />
           </Route>
 
           {/* Catch-all */}
