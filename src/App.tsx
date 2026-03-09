@@ -117,8 +117,10 @@ const AppWithDemoMode = () => {
             <Route path="/community" element={<Community />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/pomodoro" element={<Pomodoro />} />
           </Route>
+
+          {/* Full-screen routes without bottom nav */}
+          <Route path="/pomodoro" element={<ProtectedRoute><Pomodoro /></ProtectedRoute>} />
 
           {/* Catch-all */}
           <Route path="*" element={<NotFound />} />
