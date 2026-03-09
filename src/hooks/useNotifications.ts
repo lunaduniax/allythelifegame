@@ -146,6 +146,7 @@ export const useNotifications = () => {
     unreadCount,
     fetchNotifications,
     markAllAsRead,
+    markAsRead,
     createNotification,
   };
 };
