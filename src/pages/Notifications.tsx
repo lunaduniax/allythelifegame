@@ -74,9 +74,9 @@ const Notifications = () => {
                   !notification.read && "bg-primary/5 border-primary/20"
                 )}
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
+                <div className="w-full">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
                       {!notification.read && (
                         <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
                       )}
@@ -87,13 +87,13 @@ const Notifications = () => {
                         {notification.title}
                       </h3>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                      {notification.message}
-                    </p>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap flex-shrink-0">
+                      hace {formatTime(notification.created_at)}
+                    </span>
                   </div>
-                  <span className="text-xs text-muted-foreground whitespace-nowrap flex-shrink-0">
-                    hace {formatTime(notification.created_at)}
-                  </span>
+                  <p className="text-sm text-muted-foreground w-full">
+                    {notification.message}
+                  </p>
                 </div>
               </div>
             ))}
