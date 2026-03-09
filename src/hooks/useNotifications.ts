@@ -94,6 +94,27 @@ export const useNotifications = () => {
     }
   }, [user]);
 
+  const markAsRead = useCallback(async (notificationId: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('id', notificationId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setNotifications(prev =>
+        prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
+      );
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  }, [user]);
+
   const createNotification = useCallback(async (title: string, message: string) => {
     if (!user) return;
 
@@ -125,6 +146,7 @@ export const useNotifications = () => {
     unreadCount,
     fetchNotifications,
     markAllAsRead,
+    markAsRead,
     createNotification,
   };
 };
