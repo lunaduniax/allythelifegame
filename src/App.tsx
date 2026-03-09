@@ -115,6 +115,7 @@ const AppWithDemoMode = () => {
             <Route path="/about" element={<About />} />
             <Route path="/community" element={<Community />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/dashboard" element={<Dashboard />} />
           </Route>
 
           {/* Catch-all */}
