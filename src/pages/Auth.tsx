@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { Eye, EyeOff } from 'lucide-react';
 import PasswordRequirements, { validatePassword } from '@/components/PasswordRequirements';
 import ForgotPasswordModal from '@/components/ForgotPasswordModal';
+import { lovable } from '@/integrations/lovable/index';
 const signupSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido').max(100, 'El nombre es muy largo'),
   email: z.string().email('Correo electrónico inválido').max(255, 'El correo es muy largo'),
