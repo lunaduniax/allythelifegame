@@ -22,7 +22,7 @@ export const Header: FC<HeaderProps> = ({
           </p>
           <h1 className="leading-tight tracking-tight font-light text-5xl">
             Tus {projectCount}
-            <span className="mx-[10px] text-[#d4ff00]">✦</span>
+            <span className="mx-[10px] text-primary">✦</span>
             <br />
             proyectos
           </h1>
