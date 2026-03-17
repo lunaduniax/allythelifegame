@@ -142,6 +142,11 @@
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', var(--font-sans);
     margin: 0;
+    background:
+      radial-gradient(circle at top center, hsl(var(--primary) / 0.16), transparent 0 28%),
+      radial-gradient(circle at 18% 22%, hsl(var(--accent) / 0.12), transparent 0 22%),
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(194 74% 12%) 100%);
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -158,13 +163,39 @@
     display: none;
   }
 
+  .glass-panel {
+    background: linear-gradient(180deg, hsl(var(--glass-surface) / 0.82), hsl(var(--glass-surface-strong) / 0.62));
+    border: 1px solid hsl(var(--glass-highlight) / 0.09);
+    box-shadow: var(--shadow-lg), inset 0 1px 0 hsl(var(--glass-highlight) / 0.08);
+    backdrop-filter: blur(22px);
+  }
+
+  .glass-chip {
+    background: hsl(var(--glass-highlight) / 0.08);
+    border: 1px solid hsl(var(--glass-highlight) / 0.08);
+    backdrop-filter: blur(14px);
+  }
+
+  .premium-outline {
+    position: relative;
+  }
+
+  .premium-outline::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    border: 1px solid hsl(var(--glass-highlight) / 0.06);
+    pointer-events: none;
+  }
+
   /* Desktop wrapper styles */
   .bg-desktop-gradient {
-    background: 
-      radial-gradient(ellipse 80% 50% at 50% -20%, hsl(68 100% 50% / 0.08), transparent),
-      radial-gradient(ellipse 60% 40% at 80% 100%, hsl(225 40% 20% / 0.3), transparent),
-      radial-gradient(ellipse 50% 50% at 20% 80%, hsl(280 30% 15% / 0.2), transparent),
-      linear-gradient(180deg, hsl(230 38% 4%) 0%, hsl(230 38% 8%) 100%);
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -20%, hsl(var(--primary) / 0.08), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 100%, hsl(var(--accent) / 0.16), transparent),
+      radial-gradient(ellipse 50% 50% at 20% 80%, hsl(184 32% 20% / 0.24), transparent),
+      linear-gradient(180deg, hsl(192 79% 12%) 0%, hsl(194 74% 10%) 100%);
   }
 
   .bg-noise {
@@ -172,10 +203,10 @@
   }
 
   .shadow-phone {
-    box-shadow: 
-      0 0 0 1px hsl(225 10% 20% / 0.5),
-      0 25px 50px -12px hsl(0 0% 0% / 0.5),
-      0 12px 24px -8px hsl(0 0% 0% / 0.3),
-      inset 0 1px 0 0 hsl(0 0% 100% / 0.05);
+    box-shadow:
+      0 0 0 1px hsl(var(--glass-highlight) / 0.06),
+      0 25px 50px -12px hsl(192 79% 8% / 0.5),
+      0 12px 24px -8px hsl(192 79% 8% / 0.3),
+      inset 0 1px 0 0 hsl(var(--glass-highlight) / 0.06);
   }
 }

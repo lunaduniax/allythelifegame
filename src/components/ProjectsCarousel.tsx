@@ -48,29 +48,27 @@ export const ProjectsCarousel: FC<ProjectsCarouselProps> = ({
 
   const scroll = (direction: 'left' | 'right') => {
     if (!scrollRef.current) return;
-    const cardWidth = 176 + 12; // w-44 (176px) + gap-3 (12px)
+    const cardWidth = 248 + 16;
     const scrollAmount = direction === 'left' ? -cardWidth : cardWidth;
     scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   };
 
   return (
     <div className="relative group">
-      {/* Left Arrow - Desktop only */}
       {canScrollLeft && (
         <button
           onClick={() => scroll('left')}
-          className="hidden md:flex absolute left-1 top-1/2 -translate-y-1/2 z-10 w-9 h-9 items-center justify-center rounded-full bg-card/90 border border-border shadow-md hover:bg-card transition-all opacity-0 group-hover:opacity-100"
+          className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 items-center justify-center rounded-full glass-chip shadow-md hover:scale-105 transition-all opacity-0 group-hover:opacity-100"
           aria-label="Scroll left"
         >
           <ChevronLeft size={20} className="text-foreground" />
         </button>
       )}
 
-      {/* Right Arrow - Desktop only */}
       {canScrollRight && (
         <button
           onClick={() => scroll('right')}
-          className="hidden md:flex absolute right-1 top-1/2 -translate-y-1/2 z-10 w-9 h-9 items-center justify-center rounded-full bg-card/90 border border-border shadow-md hover:bg-card transition-all opacity-0 group-hover:opacity-100"
+          className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 items-center justify-center rounded-full glass-chip shadow-md hover:scale-105 transition-all opacity-0 group-hover:opacity-100"
           aria-label="Scroll right"
         >
           <ChevronRight size={20} className="text-foreground" />
@@ -79,9 +77,9 @@ export const ProjectsCarousel: FC<ProjectsCarouselProps> = ({
 
       <div
         ref={scrollRef}
-        className="overflow-x-auto scrollbar-hide pb-4 scroll-smooth overscroll-x-contain touch-pan-x snap-x snap-mandatory"
+        className="overflow-x-auto scrollbar-hide pb-5 scroll-smooth overscroll-x-contain touch-pan-x snap-x snap-mandatory"
       >
-        <div className="flex flex-nowrap gap-3 px-5 my-0 py-[9px]">
+        <div className="flex flex-nowrap gap-4 px-5 my-0 py-[9px]">
           {projects.map((project) => (
             <ProjectCard
               key={project.id}
@@ -93,15 +91,19 @@ export const ProjectsCarousel: FC<ProjectsCarouselProps> = ({
             />
           ))}
 
-          {/* Create New Goal Card */}
           <button
             onClick={onCreateProject}
-            className="flex-shrink-0 w-44 p-4 rounded-xl cursor-pointer transition-all duration-200 border border-border bg-card/50 hover:bg-card hover:border-muted-foreground/30 flex flex-col items-center justify-center gap-2 snap-start"
+            className="glass-panel premium-outline flex-shrink-0 w-[15.5rem] p-5 rounded-[30px] cursor-pointer transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between gap-4 snap-start text-left"
           >
-            <Plus size={28} className="text-muted-foreground" />
-            <span className="font-semibold leading-tight text-xl text-muted-foreground">
-              Crear nueva meta
-            </span>
+            <div className="glass-chip w-12 h-12 rounded-full flex items-center justify-center">
+              <Plus size={24} className="text-primary" />
+            </div>
+            <div>
+              <span className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">Nueva meta</span>
+              <div className="font-semibold leading-tight text-[1.65rem] text-foreground mt-2">
+                Crear nueva meta
+              </div>
+            </div>
           </button>
         </div>
       </div>
