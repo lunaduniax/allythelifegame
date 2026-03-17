@@ -17,20 +17,12 @@ import { es } from 'date-fns/locale';
 type Period = 'week' | 'month' | 'year';
 
 const CHART_COLORS = [
-  'hsl(var(--primary))',
-  'hsl(var(--accent))',
-  'hsl(var(--success))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-3))',
+  'hsl(75, 100%, 55%)',   // primary
+  'hsl(258, 90%, 66%)',   // accent
+  'hsl(145, 60%, 45%)',   // success
+  'hsl(35, 100%, 60%)',   // orange
+  'hsl(200, 80%, 55%)',   // blue
 ];
-
-const chartTooltipStyle = {
-  background: 'hsl(var(--card))',
-  border: '1px solid hsl(var(--border))',
-  borderRadius: '16px',
-  color: 'hsl(var(--foreground))',
-  fontSize: 12,
-};
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -50,6 +42,7 @@ const Dashboard = () => {
     }
   }, [period]);
 
+  // Filter tasks in period
   const tasksInPeriod = useMemo(() => {
     return tasks.filter(t => {
       try {
@@ -64,6 +57,7 @@ const Dashboard = () => {
   const totalCompleted = tasks.filter(t => t.status === 'completed').length;
   const completionRate = totalTasks > 0 ? Math.round((totalCompleted / totalTasks) * 100) : 0;
 
+  // Activity chart data
   const activityData = useMemo(() => {
     if (period === 'week') {
       const days = eachDayOfInterval(dateRange);
@@ -105,6 +99,7 @@ const Dashboard = () => {
     }
   }, [tasks, period, dateRange]);
 
+  // Projects breakdown for pie chart
   const projectBreakdown = useMemo(() => {
     return projects.map(p => {
       const projectTasks = tasks.filter(t => t.project_id === p.id);
@@ -118,6 +113,7 @@ const Dashboard = () => {
     }).filter(p => p.total > 0);
   }, [projects, tasks]);
 
+  // Streak calculation (consecutive days with completed tasks)
   const streak = useMemo(() => {
     let count = 0;
     const today = new Date();
@@ -131,7 +127,7 @@ const Dashboard = () => {
         } catch { return false; }
       });
       if (hasCompleted) count++;
-      else if (i > 0) break;
+      else if (i > 0) break; // Allow today to not have completions
     }
     return count;
   }, [tasks]);
@@ -142,44 +138,32 @@ const Dashboard = () => {
     year: 'Este año',
   };
 
-  const statCards = [
-    { label: 'Completadas', value: completedInPeriod.length, icon: CheckCircle2, tone: 'bg-primary/16 text-primary' },
-    { label: 'Progreso total', value: `${completionRate}%`, icon: TrendingUp, tone: 'bg-accent/18 text-accent' },
-    { label: 'Metas activas', value: projects.length, icon: Target, tone: 'bg-secondary text-foreground' },
-    { label: 'Días de racha', value: streak, icon: Flame, tone: 'bg-destructive/16 text-destructive' },
-  ];
-
   return (
-    <div className="min-h-screen text-foreground px-5 pt-10 pb-28">
-      <header className="glass-panel premium-outline rounded-[32px] px-5 py-5 mb-5">
-        <div className="flex items-center justify-between gap-3">
-          <button
-            onClick={() => navigate(-1)}
-            className="glass-chip w-11 h-11 rounded-full flex items-center justify-center"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <div className="text-center">
-            <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-1">Insights</div>
-            <h1 className="text-[1.7rem] font-semibold">Dashboard</h1>
-          </div>
-          <div className="glass-chip rounded-full px-3 py-2 text-xs text-muted-foreground">
-            {periodLabels[period]}
-          </div>
-        </div>
+    <div className="bg-background text-foreground min-h-screen">
+      {/* Header */}
+      <header className="flex items-center justify-between px-6 py-4 pt-12">
+        <button
+          onClick={() => navigate(-1)}
+          className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center"
+        >
+          <ChevronLeft size={20} />
+        </button>
+        <h1 className="text-lg font-semibold">Dashboard</h1>
+        <div className="w-10" />
       </header>
 
-      <div className="glass-panel premium-outline rounded-[28px] p-1 mb-5">
-        <div className="flex gap-2">
+      {/* Period Tabs */}
+      <div className="px-6 pt-2 pb-4">
+        <div className="flex gap-2 bg-secondary/50 rounded-2xl p-1">
           {(['week', 'month', 'year'] as Period[]).map(p => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
               className={cn(
-                'flex-1 py-3 rounded-[22px] text-sm font-medium transition-all',
+                "flex-1 py-2.5 rounded-xl text-sm font-medium transition-all",
                 period === p
-                  ? 'bg-primary text-primary-foreground shadow-md'
-                  : 'text-muted-foreground hover:text-foreground glass-chip'
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
               {p === 'week' ? 'Semana' : p === 'month' ? 'Mes' : 'Año'}
@@ -188,113 +172,195 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-5">
-        {statCards.map(({ label, value, icon: Icon, tone }) => (
-          <div key={label} className="glass-panel premium-outline rounded-[26px] p-4">
-            <div className={cn('w-10 h-10 rounded-full flex items-center justify-center mb-5', tone)}>
-              <Icon size={18} />
+      {/* Stats Cards */}
+      <div className="px-6 grid grid-cols-2 gap-3 mb-6">
+        <div className="bg-card border border-border rounded-2xl p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+              <CheckCircle2 size={16} className="text-primary" />
             </div>
-            <p className="text-3xl font-semibold leading-none mb-2">{value}</p>
-            <p className="text-xs text-muted-foreground">{label}</p>
           </div>
-        ))}
-      </div>
-
-      <div className="glass-panel premium-outline rounded-[30px] p-4 mb-5">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-lg">Actividad</h2>
-          <span className="glass-chip rounded-full px-3 py-1 text-xs text-muted-foreground">{periodLabels[period]}</span>
+          <p className="text-2xl font-bold">{completedInPeriod.length}</p>
+          <p className="text-xs text-muted-foreground">Completadas</p>
         </div>
-        <div className="h-52">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={activityData} barSize={period === 'year' ? 16 : 24}>
-              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} />
-              <YAxis hide allowDecimals={false} />
-              <Tooltip contentStyle={chartTooltipStyle} cursor={{ fill: 'hsl(var(--foreground) / 0.04)' }} />
-              <Bar dataKey="completadas" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
 
-      <div className="glass-panel premium-outline rounded-[30px] p-4 mb-5 overflow-hidden">
-        <h2 className="font-semibold text-lg mb-4">Tendencia de completado</h2>
-        <div className="h-44">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={activityData}>
-              <defs>
-                <linearGradient id="completedGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} />
-              <YAxis hide allowDecimals={false} />
-              <Tooltip contentStyle={chartTooltipStyle} cursor={{ stroke: 'hsl(var(--primary) / 0.3)' }} />
-              <Area type="monotone" dataKey="completadas" stroke="hsl(var(--primary))" strokeWidth={2.5} fill="url(#completedGradient)" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {projectBreakdown.length > 0 && (
-        <div className="glass-panel premium-outline rounded-[30px] p-4 mb-5">
-          <h2 className="font-semibold text-lg mb-4">Progreso por meta</h2>
-          <div className="flex gap-4 items-center">
-            <div className="w-32 h-32 flex-shrink-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={projectBreakdown}
-                    dataKey="completed"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={32}
-                    outerRadius={56}
-                    strokeWidth={0}
-                  >
-                    {projectBreakdown.map((_, i) => (
-                      <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
+        <div className="bg-card border border-border rounded-2xl p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
+              <TrendingUp size={16} className="text-accent" />
             </div>
-            <div className="flex-1 space-y-3 overflow-hidden">
-              {projectBreakdown.map((p, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm truncate">{p.name}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className="flex-1 h-2 rounded-full bg-secondary/90 overflow-hidden">
-                        <div
-                          className="h-full rounded-full transition-all"
-                          style={{
-                            width: `${p.progress}%`,
-                            backgroundColor: CHART_COLORS[i % CHART_COLORS.length],
-                          }}
-                        />
+          </div>
+          <p className="text-2xl font-bold">{completionRate}%</p>
+          <p className="text-xs text-muted-foreground">Progreso total</p>
+        </div>
+
+        <div className="bg-card border border-border rounded-2xl p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-[hsl(var(--success))]/20 flex items-center justify-center">
+              <Target size={16} className="text-[hsl(var(--success))]" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold">{projects.length}</p>
+          <p className="text-xs text-muted-foreground">Metas activas</p>
+        </div>
+
+        <div className="bg-card border border-border rounded-2xl p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-destructive/20 flex items-center justify-center">
+              <Flame size={16} className="text-destructive" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold">{streak}</p>
+          <p className="text-xs text-muted-foreground">Días de racha</p>
+        </div>
+      </div>
+
+      {/* Activity Chart */}
+      <div className="px-6 mb-6">
+        <div className="bg-card border border-border rounded-2xl p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-semibold">Actividad</h2>
+            <span className="text-xs text-muted-foreground">{periodLabels[period]}</span>
+          </div>
+          <div className="h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={activityData} barSize={period === 'year' ? 16 : 24}>
+                <XAxis
+                  dataKey="label"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: 'hsl(215, 20%, 65%)', fontSize: 11 }}
+                />
+                <YAxis hide allowDecimals={false} />
+                <Tooltip
+                  contentStyle={{
+                    background: 'hsl(222, 47%, 11%)',
+                    border: '1px solid hsl(215, 28%, 17%)',
+                    borderRadius: '12px',
+                    color: 'hsl(210, 40%, 98%)',
+                    fontSize: 12,
+                  }}
+                />
+                <Bar
+                  dataKey="completadas"
+                  fill="hsl(75, 100%, 55%)"
+                  radius={[6, 6, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Completion Trend */}
+      <div className="px-6 mb-6">
+        <div className="bg-card border border-border rounded-2xl p-4">
+          <h2 className="font-semibold mb-4">Tendencia de completado</h2>
+          <div className="h-40">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={activityData}>
+                <defs>
+                  <linearGradient id="completedGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(75, 100%, 55%)" stopOpacity={0.3} />
+                    <stop offset="100%" stopColor="hsl(75, 100%, 55%)" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis
+                  dataKey="label"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: 'hsl(215, 20%, 65%)', fontSize: 11 }}
+                />
+                <YAxis hide allowDecimals={false} />
+                <Tooltip
+                  contentStyle={{
+                    background: 'hsl(222, 47%, 11%)',
+                    border: '1px solid hsl(215, 28%, 17%)',
+                    borderRadius: '12px',
+                    color: 'hsl(210, 40%, 98%)',
+                    fontSize: 12,
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="completadas"
+                  stroke="hsl(75, 100%, 55%)"
+                  strokeWidth={2}
+                  fill="url(#completedGradient)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Projects Breakdown */}
+      {projectBreakdown.length > 0 && (
+        <div className="px-6 mb-6">
+          <div className="bg-card border border-border rounded-2xl p-4">
+            <h2 className="font-semibold mb-4">Progreso por meta</h2>
+            <div className="flex gap-4">
+              <div className="w-32 h-32 flex-shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={projectBreakdown}
+                      dataKey="completed"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={30}
+                      outerRadius={55}
+                      strokeWidth={0}
+                    >
+                      {projectBreakdown.map((_, i) => (
+                        <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex-1 space-y-3 overflow-hidden">
+                {projectBreakdown.map((p, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <div
+                      className="w-3 h-3 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm truncate">{p.name}</p>
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 h-1.5 rounded-full bg-secondary">
+                          <div
+                            className="h-full rounded-full transition-all"
+                            style={{
+                              width: `${p.progress}%`,
+                              backgroundColor: CHART_COLORS[i % CHART_COLORS.length],
+                            }}
+                          />
+                        </div>
+                        <span className="text-xs text-muted-foreground">{p.progress}%</span>
                       </div>
-                      <span className="text-xs text-muted-foreground">{p.progress}%</span>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
       )}
 
+      {/* Empty state */}
       {tasks.length === 0 && (
-        <div className="glass-panel premium-outline rounded-[30px] px-6 py-12 text-center">
-          <div className="w-16 h-16 rounded-full glass-chip flex items-center justify-center mx-auto mb-4">
+        <div className="px-6 py-12 text-center">
+          <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4">
             <Calendar size={28} className="text-muted-foreground" />
           </div>
           <p className="text-muted-foreground">Creá metas y completá tareas para ver tus métricas</p>
         </div>
       )}
+
+      <div className="h-24" />
     </div>
   );
 };
