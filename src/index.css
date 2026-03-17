@@ -12,70 +12,73 @@
 
 @layer base {
   :root {
-    --background: 224 41% 7%;
+    --background: 192 79% 18%;
     --foreground: 210 40% 98.0392%;
 
-    --card: 222 47% 11%;
+    --card: 205 25% 10%;
     --card-foreground: 210 40% 98.0392%;
-    --card-elevated: 225 12% 14%;
+    --card-elevated: 184 31% 17%;
 
-    --popover: 222 47% 11%;
+    --popover: 205 25% 10%;
     --popover-foreground: 210 40% 98.0392%;
 
-    --primary: 75 100% 55%;
-    --primary-foreground: 224 41% 7%;
+    --primary: 57 90% 78%;
+    --primary-foreground: 205 30% 8%;
 
-    --secondary: 215 28% 17%;
+    --secondary: 188 33% 15%;
     --secondary-foreground: 210 40% 98.0392%;
 
-    --muted: 215 20% 65%;
-    --muted-foreground: 213 27% 84%;
+    --muted: 190 18% 58%;
+    --muted-foreground: 191 21% 75%;
 
-    --accent: 258 90% 66%;
-    --accent-foreground: 210 40% 98.0392%;
+    --accent: 307 47% 77%;
+    --accent-foreground: 205 30% 8%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98.0392%;
 
-    --border: 215 28% 17%;
-    --input: 222 47% 11%;
-    --ring: 75 100% 55%;
+    --border: 187 24% 24%;
+    --input: 188 24% 14%;
+    --ring: 57 90% 78%;
 
-    --radius: 1rem;
+    --radius: 1.25rem;
 
     /* Custom colors */
-    --project-card-light: 68 100% 50%;
-    --project-card-light-foreground: 225 20% 10%;
-    --progress-bar-bg: 225 10% 20%;
-    --task-tag-bg: 225 10% 20%;
+    --project-card-light: 57 90% 78%;
+    --project-card-light-foreground: 205 30% 8%;
+    --progress-bar-bg: 187 15% 24%;
+    --task-tag-bg: 187 15% 24%;
     --success: 145 60% 45%;
 
-    --sidebar-background: 230 38% 6%;
-    --sidebar-foreground: 265 4% 12.9%;
-    --sidebar-primary: 266 4% 20.8%;
-    --sidebar-primary-foreground: 248 0.3% 98.4%;
-    --sidebar-accent: 248 0.7% 96.8%;
-    --sidebar-accent-foreground: 266 4% 20.8%;
-    --sidebar-border: 256 1.3% 92.9%;
-    --sidebar-ring: 257 4% 70.4%;
-    --chart-1: 75 100% 55%;
-    --chart-2: 258 90% 66%;
-    --chart-3: 239 84% 67%;
-    --chart-4: 198 93% 60%;
-    --chart-5: 215 20% 65%;
+    --sidebar-background: 195 65% 11%;
+    --sidebar-foreground: 210 40% 98.0392%;
+    --sidebar-primary: 57 90% 78%;
+    --sidebar-primary-foreground: 205 30% 8%;
+    --sidebar-accent: 188 33% 15%;
+    --sidebar-accent-foreground: 210 40% 98.0392%;
+    --sidebar-border: 187 24% 24%;
+    --sidebar-ring: 57 90% 78%;
+    --chart-1: 57 90% 78%;
+    --chart-2: 307 47% 77%;
+    --chart-3: 183 41% 72%;
+    --chart-4: 28 88% 67%;
+    --chart-5: 191 21% 75%;
     --sidebar: 248 0.3% 98.4%;
     --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
     --font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
     --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
     --font-mono: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+    --glass-surface: 188 28% 16%;
+    --glass-surface-strong: 188 31% 20%;
+    --glass-highlight: 0 0% 100%;
     --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-    --shadow-sm: 0px 10px 32px -8px hsla(227, 39%, 7%, 0.45);
-    --shadow: 0px 10px 64px -8px hsla(227, 39%, 7%, 0.45);
-    --shadow-md: 0px 10px 96px -8px hsla(227, 39%, 7%, 0.45);
-    --shadow-lg: 0px 10px 160px -8px hsla(227, 39%, 7%, 0.45);
-    --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
-    --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+    --shadow-sm: 0px 18px 44px -12px hsl(192 79% 8% / 0.34);
+    --shadow: 0px 24px 72px -16px hsl(192 79% 8% / 0.4);
+    --shadow-md: 0px 28px 96px -18px hsl(192 79% 8% / 0.45);
+    --shadow-lg: 0px 34px 120px -20px hsl(192 79% 8% / 0.5);
+    --shadow-xl: 0 22px 50px -18px hsl(192 79% 8% / 0.42);
+    --shadow-2xl: 0 30px 80px -24px hsl(192 79% 6% / 0.55);
     --tracking-normal: 0em;
     --spacing: 0.25rem;
   }
@@ -139,6 +142,11 @@
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', var(--font-sans);
     margin: 0;
+    background:
+      radial-gradient(circle at top center, hsl(var(--primary) / 0.16), transparent 0 28%),
+      radial-gradient(circle at 18% 22%, hsl(var(--accent) / 0.12), transparent 0 22%),
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(194 74% 12%) 100%);
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -155,13 +163,39 @@
     display: none;
   }
 
+  .glass-panel {
+    background: linear-gradient(180deg, hsl(var(--glass-surface) / 0.82), hsl(var(--glass-surface-strong) / 0.62));
+    border: 1px solid hsl(var(--glass-highlight) / 0.09);
+    box-shadow: var(--shadow-lg), inset 0 1px 0 hsl(var(--glass-highlight) / 0.08);
+    backdrop-filter: blur(22px);
+  }
+
+  .glass-chip {
+    background: hsl(var(--glass-highlight) / 0.08);
+    border: 1px solid hsl(var(--glass-highlight) / 0.08);
+    backdrop-filter: blur(14px);
+  }
+
+  .premium-outline {
+    position: relative;
+  }
+
+  .premium-outline::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    border: 1px solid hsl(var(--glass-highlight) / 0.06);
+    pointer-events: none;
+  }
+
   /* Desktop wrapper styles */
   .bg-desktop-gradient {
-    background: 
-      radial-gradient(ellipse 80% 50% at 50% -20%, hsl(68 100% 50% / 0.08), transparent),
-      radial-gradient(ellipse 60% 40% at 80% 100%, hsl(225 40% 20% / 0.3), transparent),
-      radial-gradient(ellipse 50% 50% at 20% 80%, hsl(280 30% 15% / 0.2), transparent),
-      linear-gradient(180deg, hsl(230 38% 4%) 0%, hsl(230 38% 8%) 100%);
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -20%, hsl(var(--primary) / 0.08), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 100%, hsl(var(--accent) / 0.16), transparent),
+      radial-gradient(ellipse 50% 50% at 20% 80%, hsl(184 32% 20% / 0.24), transparent),
+      linear-gradient(180deg, hsl(192 79% 12%) 0%, hsl(194 74% 10%) 100%);
   }
 
   .bg-noise {
@@ -169,10 +203,10 @@
   }
 
   .shadow-phone {
-    box-shadow: 
-      0 0 0 1px hsl(225 10% 20% / 0.5),
-      0 25px 50px -12px hsl(0 0% 0% / 0.5),
-      0 12px 24px -8px hsl(0 0% 0% / 0.3),
-      inset 0 1px 0 0 hsl(0 0% 100% / 0.05);
+    box-shadow:
+      0 0 0 1px hsl(var(--glass-highlight) / 0.06),
+      0 25px 50px -12px hsl(192 79% 8% / 0.5),
+      0 12px 24px -8px hsl(192 79% 8% / 0.3),
+      inset 0 1px 0 0 hsl(var(--glass-highlight) / 0.06);
   }
 }

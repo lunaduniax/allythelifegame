@@ -27,13 +27,11 @@ interface ProjectCardProps {
   onDelete?: (projectId: string) => void;
 }
 
-// Helper to determine if a hex color is light (for text contrast)
 const isLightColor = (hexColor: string): boolean => {
   const hex = hexColor.replace('#', '');
   const r = parseInt(hex.substring(0, 2), 16);
   const g = parseInt(hex.substring(2, 4), 16);
   const b = parseInt(hex.substring(4, 6), 16);
-  // Using relative luminance formula
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   return luminance > 0.5;
 };
@@ -47,8 +45,8 @@ export const ProjectCard: FC<ProjectCardProps> = ({
 }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const isLight = isLightColor(project.color);
-  const textColor = isLight ? 'text-gray-900' : 'text-white';
-  const textMutedColor = isLight ? 'text-gray-700' : 'text-white/70';
+  const textColor = isLight ? 'hsl(205 30% 8%)' : 'hsl(var(--foreground))';
+  const textMutedColor = isLight ? 'hsl(205 20% 18% / 0.78)' : 'hsl(var(--foreground) / 0.7)';
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -67,26 +65,23 @@ export const ProjectCard: FC<ProjectCardProps> = ({
       <div
         onClick={onSelect}
         className={cn(
-          "flex-shrink-0 w-44 p-4 rounded-xl cursor-pointer transition-all duration-200 border-0 snap-start relative group",
-          isSelected && "ring-2 ring-offset-2 ring-offset-background"
+          'flex-shrink-0 w-[15.5rem] p-5 rounded-[30px] cursor-pointer transition-all duration-300 snap-start relative group premium-outline overflow-hidden',
+          isSelected ? 'scale-[1.01] ring-1 ring-primary/70 shadow-2xl' : 'hover:-translate-y-1'
         )}
         style={{
-          backgroundColor: project.color,
-          ['--tw-ring-color' as string]: project.color,
+          background: `linear-gradient(180deg, ${project.color}, color-mix(in srgb, ${project.color} 68%, black))`,
         }}
       >
-        {/* Overflow Menu */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-transparent to-black/18 pointer-events-none" />
+
         {onDelete && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 onClick={(e) => e.stopPropagation()}
-                className={cn(
-                  "absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity",
-                  isLight ? "bg-black/10 hover:bg-black/20" : "bg-white/10 hover:bg-white/20"
-                )}
+                className="absolute top-3 right-3 w-8 h-8 rounded-full glass-chip flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <MoreHorizontal size={16} className={isLight ? "text-gray-900" : "text-white"} />
+                <MoreHorizontal size={16} style={{ color: textColor }} />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-[140px]">
@@ -101,40 +96,41 @@ export const ProjectCard: FC<ProjectCardProps> = ({
           </DropdownMenu>
         )}
 
-        <span className={cn("font-medium opacity-70 block mb-2 text-sm", textMutedColor)}>
-          {project.category}
-        </span>
+        <div className="relative z-10 flex flex-col h-full min-h-[220px]">
+          <span className="glass-chip w-fit rounded-full px-3 py-1 text-[11px] font-medium uppercase tracking-[0.16em] mb-4" style={{ color: textMutedColor }}>
+            {project.category}
+          </span>
 
-        <h3 className={cn("font-semibold leading-tight mb-4 line-clamp-2 text-xl", textColor)}>
-          {project.name}
-        </h3>
+          <h3 className="font-semibold leading-tight mb-6 text-[1.65rem] max-w-[11ch]" style={{ color: textColor }}>
+            {project.name}
+          </h3>
 
-        <div className="mt-auto">
-          <div className="flex items-center justify-between mb-2">
-            <span className={cn("font-medium text-sm", textMutedColor)}>Progreso</span>
-            <span className={cn("text-sm font-semibold", textColor)}>{progress} %</span>
-          </div>
+          <div className="mt-auto">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm" style={{ color: textMutedColor }}>Progreso</span>
+              <span className="text-sm font-semibold" style={{ color: textColor }}>{progress}%</span>
+            </div>
 
-          <div
-            className="h-[10px] rounded-full mt-2 overflow-hidden"
-            style={{
-              backgroundColor: isLight ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.18)',
-              border: '1px solid rgba(0,0,0,0.12)',
-            }}
-          >
             <div
-              className="h-full rounded-full transition-all duration-500"
+              className="h-[12px] rounded-full mt-2 overflow-hidden"
               style={{
-                width: `${Math.max(progress, 0)}%`,
-                backgroundColor: isLight ? 'rgba(0,0,0,0.75)' : 'rgba(255,255,255,0.9)',
-                boxShadow: isLight ? 'none' : 'inset 0 0 0 1px rgba(0,0,0,0.3)',
+                backgroundColor: isLight ? 'rgba(0,0,0,0.14)' : 'rgba(255,255,255,0.16)',
+                border: isLight ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.08)',
               }}
-            />
+            >
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{
+                  width: `${Math.max(progress, 0)}%`,
+                  backgroundColor: isLight ? 'rgba(0,0,0,0.72)' : 'hsl(var(--primary))',
+                  boxShadow: isLight ? 'none' : '0 0 24px rgba(245, 240, 154, 0.32)',
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
