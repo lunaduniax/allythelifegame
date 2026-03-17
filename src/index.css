@@ -12,66 +12,66 @@
 
 @layer base {
   :root {
-    --background: 0 0% 4%;
-    --foreground: 0 0% 95%;
+    --background: 200 57% 3%;
+    --foreground: 66 88% 70%;
 
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 95%;
-    --card-elevated: 0 0% 14%;
+    --card: 0 0% 15%;
+    --card-foreground: 66 88% 82%;
+    --card-elevated: 0 0% 18%;
 
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 15%;
+    --popover-foreground: 66 88% 82%;
 
-    --primary: 68 90% 60%;
-    --primary-foreground: 0 0% 4%;
+    --primary: 66 88% 67%;
+    --primary-foreground: 200 57% 3%;
 
-    --secondary: 0 0% 16%;
+    --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 85%;
 
     --muted: 0 0% 30%;
     --muted-foreground: 0 0% 65%;
 
-    --accent: 270 60% 75%;
-    --accent-foreground: 0 0% 95%;
+    --accent: 268 98% 87%;
+    --accent-foreground: 200 57% 3%;
 
-    --destructive: 15 80% 55%;
+    --destructive: 14 82% 61%;
     --destructive-foreground: 0 0% 95%;
 
     --border: 0 0% 18%;
     --input: 0 0% 12%;
-    --ring: 68 90% 60%;
+    --ring: 66 88% 67%;
 
     --radius: 1rem;
 
     /* Custom colors */
-    --project-card-light: 68 90% 60%;
-    --project-card-light-foreground: 0 0% 4%;
+    --project-card-light: 66 88% 67%;
+    --project-card-light-foreground: 200 57% 3%;
     --progress-bar-bg: 0 0% 18%;
     --task-tag-bg: 0 0% 18%;
-    --success: 130 50% 60%;
+    --success: 110 38% 74%;
 
     /* Palette accents */
-    --color-lime: 68 90% 60%;
-    --color-mint: 130 50% 70%;
-    --color-lavender: 270 60% 75%;
-    --color-pink: 320 55% 70%;
-    --color-orange: 15 80% 55%;
-    --color-amber: 30 90% 60%;
-    --color-gray: 30 5% 50%;
-
-    --sidebar-background: 0 0% 6%;
+    --color-lime: 66 88% 67%;
+    --color-mint: 110 38% 74%;
+    --color-lavender: 268 98% 87%;
+    --color-pink: 316 56% 76%;
+    --color-coral: 14 82% 61%;
+    --color-orange: 30 97% 63%;
+    --color-gray: 24 4% 41%;
+    --color-dark: 0 0% 15%;
+    --sidebar-background: 200 57% 3%;
     --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 68 90% 60%;
-    --sidebar-primary-foreground: 0 0% 4%;
+    --sidebar-primary: 66 88% 67%;
+    --sidebar-primary-foreground: 200 57% 3%;
     --sidebar-accent: 0 0% 16%;
     --sidebar-accent-foreground: 0 0% 90%;
     --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 68 90% 60%;
-    --chart-1: 68 90% 60%;
-    --chart-2: 270 60% 75%;
-    --chart-3: 320 55% 70%;
-    --chart-4: 130 50% 70%;
-    --chart-5: 15 80% 55%;
+    --sidebar-ring: 66 88% 67%;
+    --chart-1: 66 88% 67%;
+    --chart-2: 268 98% 87%;
+    --chart-3: 316 56% 76%;
+    --chart-4: 110 38% 74%;
+    --chart-5: 14 82% 61%;
     --sidebar: 0 0% 10%;
     --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
     --font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
@@ -90,38 +90,38 @@
   }
 
   .dark {
-    --background: 0 0% 4%;
-    --foreground: 0 0% 95%;
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 68 90% 60%;
-    --primary-foreground: 0 0% 4%;
-    --secondary: 0 0% 16%;
+    --background: 200 57% 3%;
+    --foreground: 66 88% 70%;
+    --card: 0 0% 15%;
+    --card-foreground: 66 88% 82%;
+    --popover: 0 0% 15%;
+    --popover-foreground: 66 88% 82%;
+    --primary: 66 88% 67%;
+    --primary-foreground: 200 57% 3%;
+    --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 85%;
     --muted: 0 0% 30%;
     --muted-foreground: 0 0% 65%;
-    --accent: 270 60% 75%;
-    --accent-foreground: 0 0% 95%;
-    --destructive: 15 80% 55%;
+    --accent: 268 98% 87%;
+    --accent-foreground: 200 57% 3%;
+    --destructive: 14 82% 61%;
     --destructive-foreground: 0 0% 95%;
     --border: 0 0% 18%;
     --input: 0 0% 12%;
-    --ring: 68 90% 60%;
-    --sidebar-background: 0 0% 6%;
+    --ring: 66 88% 67%;
+    --sidebar-background: 200 57% 3%;
     --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 68 90% 60%;
-    --sidebar-primary-foreground: 0 0% 4%;
+    --sidebar-primary: 66 88% 67%;
+    --sidebar-primary-foreground: 200 57% 3%;
     --sidebar-accent: 0 0% 16%;
     --sidebar-accent-foreground: 0 0% 90%;
     --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 68 90% 60%;
-    --chart-1: 68 90% 60%;
-    --chart-2: 270 60% 75%;
-    --chart-3: 320 55% 70%;
-    --chart-4: 130 50% 70%;
-    --chart-5: 15 80% 55%;
+    --sidebar-ring: 66 88% 67%;
+    --chart-1: 66 88% 67%;
+    --chart-2: 268 98% 87%;
+    --chart-3: 316 56% 76%;
+    --chart-4: 110 38% 74%;
+    --chart-5: 14 82% 61%;
     --sidebar: 0 0% 10%;
     --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
